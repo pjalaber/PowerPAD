@@ -3,7 +3,6 @@ import Qt.labs.platform 1.1
 
 SystemTrayIcon
 {
-    id: sysTray
     tooltip: qsTr("PowerPAD")
     visible: true
     icon.mask: true

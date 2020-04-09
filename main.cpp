@@ -1,11 +1,14 @@
 #include <QApplication>
 #include <QCoreApplication>
 #include <QQmlApplicationEngine>
+#include <QQuickStyle>
 #include <QIcon>
+#include "controller.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QQuickStyle::setStyle("Universal");
 
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/icon.png"));
@@ -19,5 +22,15 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
 
-    return app.exec();
+    ControllerThread controllerThread;
+    int ret;
+    if (!controllerThread.start())
+        ret = -1;
+    else
+    {
+        ret = app.exec();
+        controllerThread.stop();
+    }
+
+    return ret;
 }
