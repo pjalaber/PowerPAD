@@ -5,8 +5,11 @@ ApplicationWindow {
     id: applicationWindow
     flags: Qt.Tool | Qt.FramelessWindowHint
     visible: false
+    width: 300
+    height: 300
 
     RectangleApp {
+        id: rectangleApp
     }
 
     SysTray {

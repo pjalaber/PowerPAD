@@ -64,6 +64,7 @@ class ControllerThread: public QThread
 {
     Q_OBJECT
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(quint32 connectedCount READ connectedCount NOTIFY connectedCountChanged)
 private:
     QLibrary m_lib;
 
@@ -72,6 +73,7 @@ protected:
     quint32 m_leftThumbDeadZone;
 	bool m_shouldStop;
     bool m_enabled;
+    quint32 m_connectedCount;
 
     static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
     void updateMousePosition(const Controller& controller, double delta);
@@ -91,20 +93,14 @@ public:
     bool start();
     void stop();
 
-    bool enabled()
-    {
-        return m_enabled;
-    }
+    bool enabled();
+    void setEnabled(const bool &enabled);
 
-    void setEnabled(const bool &enabled)
-    {
-        if (m_enabled == enabled)
-            return;
-        m_enabled = enabled;
-        emit enabledChanged();
-    }
+    quint32 connectedCount();
+    void setConnectedCount(const quint32 &connectedCount);
 
 signals:
     void enabledChanged();
+    void connectedCountChanged();
 };
 

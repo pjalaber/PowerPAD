@@ -13,7 +13,7 @@ Controller::Controller() : m_connected(false),
 
 bool Controller::readCurrentState(quint32 index)
 {
-    assert(index < XUSER_MAX_COUNT);
+    Q_ASSERT(index < XUSER_MAX_COUNT);
 
     if (!m_connected && m_connectCheckTimer.isValid() &&
             m_connectCheckTimer.elapsed() < 3000)
@@ -59,7 +59,8 @@ void Controller::saveCurrentState(void)
 }
 
 ControllerThread::ControllerThread() : m_controller(),
-    m_leftThumbDeadZone(DEF_JOYSTICK_DEADZONE), m_shouldStop(false), m_enabled(true)
+    m_leftThumbDeadZone(DEF_JOYSTICK_DEADZONE), m_shouldStop(false), m_enabled(true),
+    m_connectedCount(0)
 {
 }
 
@@ -144,15 +145,21 @@ void ControllerThread::run()
             controller.readCurrentState(i);
 
             if (!connected && controller.isConnected())
+            {
+                setConnectedCount(m_connectedCount + 1);
                 qInfo().nospace() << "Controller #" << i << " is connected";
+            }
             else if (connected && !controller.isConnected())
+            {
+                setConnectedCount(m_connectedCount - 1);
                 qInfo().nospace() << "Controller #" << i << " is disconnected";
+            }
 
             triggerMouseEvent(controller);
             updateMousePosition(controller, elapsed / FRAME_DURATION);
 
-            ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
             ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
+            ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
             if (start == ButtonState::Up && !controller.m_startButtonHistory.IsStillActive(start))
                 controller.m_startButtonHistory.StartActive(ButtonState::Up);
             if (back == ButtonState::Up && !controller.m_backButtonHistory.IsStillActive(back))
@@ -163,10 +170,6 @@ void ControllerThread::run()
                 controller.m_startButtonHistory.Clear();
                 controller.m_backButtonHistory.Clear();
                 setEnabled(!m_enabled);
-                if (m_enabled)
-                    qInfo().nospace() << "Controller thread enabled";
-                else
-                    qInfo().nospace() << "Controller thread disabled";
             }
 
             controller.saveCurrentState();
@@ -212,3 +215,36 @@ void ControllerThread::stop()
     m_shouldStop = true;
     wait();
 }
+
+bool ControllerThread::enabled()
+{
+    return m_enabled;
+}
+
+void ControllerThread::setEnabled(const bool &enabled)
+{
+    if (m_enabled == enabled)
+        return;
+    m_enabled = enabled;
+    emit enabledChanged();
+    if (m_enabled)
+        qInfo().nospace() << "Controller thread enabled";
+    else
+        qInfo().nospace() << "Controller thread disabled";
+}
+
+
+quint32 ControllerThread::connectedCount()
+{
+    return m_connectedCount;
+}
+
+void ControllerThread::setConnectedCount(const quint32 &connectedCount)
+{
+    Q_ASSERT(connectedCount <= XUSER_MAX_COUNT);
+    if (m_connectedCount == connectedCount)
+        return;
+    m_connectedCount = connectedCount;
+    emit connectedCountChanged();
+}
+
