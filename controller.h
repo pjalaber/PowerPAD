@@ -3,11 +3,12 @@
 #include <QThread>
 #include <QElapsedTimer>
 #include <QLibrary>
+#include <QQmlEngine>
 #include <xinput.h>
 
 enum class ButtonState
 {
-	None, Down, Up
+    Down, StillDown, Up, None
 };
 
 class ButtonHistory
@@ -32,54 +33,78 @@ public:
 	}
 	void Clear()
 	{
-		m_buttonState = ButtonState::None;
+        m_buttonState = ButtonState::None;
         m_timer.invalidate();
     }
 };
 
 class Controller
 {
+protected:
+    bool m_connected;
+    QElapsedTimer m_connectCheckTimer;
 public:
     static const quint32 CURRENT_STATE = 0;
     static const quint32 PREVIOUS_STATE = 1;
-	bool m_connected;
-	bool m_controlMouse;
 	XINPUT_STATE m_state[2];
-    QElapsedTimer m_lastStateCheckElapsedTimer;
 	ButtonHistory m_startButtonHistory;
 	ButtonHistory m_backButtonHistory;
-	Controller();
-    bool buttonIsDown(DWORD button, UINT state) const;
+    Controller();
+    bool buttonIsDown(DWORD button, quint32 state) const;
     ButtonState getButtonState(DWORD button) const;
+    bool readCurrentState(quint32 i);
     void saveCurrentState(void);
+    bool isConnected()
+    {
+        return m_connected;
+    }
 };
 
 class ControllerThread: public QThread
 {
+    Q_OBJECT
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 private:
     QLibrary m_lib;
 
 protected:
 	Controller m_controller[XUSER_MAX_COUNT];
-    quint16 m_leftThumbDeadZone;
-    quint16 m_horiz_speed, m_vert_speed;
+    quint32 m_leftThumbDeadZone;
 	bool m_shouldStop;
+    bool m_enabled;
 
-    static INT getNormDeadZone(SHORT value, SHORT deadZone);
-    void updateMousePosition(const Controller& controller);
+    static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
+    void updateMousePosition(const Controller& controller, double delta);
     void triggerMouseEvent(const Controller& controller);
 
 private:
     void run();
 
 public:
-	static const USHORT JOYSTICK_MAX_VALUE = 32767;
-	static const USHORT DEF_HORIZ_SPEED = 30;
-	static const USHORT DEF_VERT_SPEED = 30;
-	static const USHORT DEF_JOYSTICK_DEADZONE = (24 * JOYSTICK_MAX_VALUE / 100);
-    static const UINT MOUSE_FPS = 25;
+    static const quint32 JOYSTICK_MAX_VALUE = 32767;
+    static const quint32 DEF_JOYSTICK_DEADZONE = (15 * JOYSTICK_MAX_VALUE / 100);
+    static const quint32 FPS = 60;
+    static const quint32 SPEED= 800; // pixel per second
+    static constexpr double FRAME_DURATION = 1000.0 / FPS;
     ControllerThread();
+    static ControllerThread& instance();
     bool start();
     void stop();
+
+    bool enabled()
+    {
+        return m_enabled;
+    }
+
+    void setEnabled(const bool &enabled)
+    {
+        if (m_enabled == enabled)
+            return;
+        m_enabled = enabled;
+        emit enabledChanged();
+    }
+
+signals:
+    void enabledChanged();
 };
 

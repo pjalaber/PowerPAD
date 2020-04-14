@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.13
+import com.tekit.powerpad.controllerthread 1.0
 
 Rectangle {
     color: "#ffffff"
@@ -41,9 +42,11 @@ Rectangle {
     }
 
     Switch {
-        id: element
+        id: enableSwitch
         x: 8
         y: 50
+        checked: ControllerThread.enabled
+        onCheckedChanged: ControllerThread.enabled = checked
         text: qsTr("Enabled")
     }
 }
