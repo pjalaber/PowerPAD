@@ -1,38 +1,38 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.13
-import com.tekit.powerpad.controllerthread 1.0
 
 Rectangle {
-    id: rectangle
-    color: "#eeeeee"
+    color: "#fafafa"
+    antialiasing: false
     anchors.fill: parent
     border.width: 1
-    width: 300
-    height: 300
+    width: 250
+    height: 230
 
     Rectangle {
-        id: rectangle1
         x: 1
         y: 1
-        width: 298
+        width: 248
         height: 70
         color: "#3f51b5"
     }
 
     Label {
-        id: label
         x: 65
-        y: 1
-        height: 46
+        y: 13
+        width: 87
+        height: 28
         text: qsTr("PowerPAD")
         font.bold: true
-        font.pointSize: 10
+        font.pointSize: 12
         color: "white"
         verticalAlignment: Text.AlignVCenter
     }
 
+    property alias labelStatus: labelStatus
     Label {
-        x: 66
+        id: labelStatus
+        x: 65
         y: 35
         height: 25
         width: 69
@@ -42,27 +42,73 @@ Rectangle {
         color: "white"
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
-        visible: ControllerThread.connectedCount > 0
     }
 
     Image {
-        id: image
         x: 15
-        y: 14
+        y: 16
         width: 39
         height: 39
+        layer.smooth: true
         smooth: true
         source: "icon.png"
         fillMode: Image.PreserveAspectFit
     }
 
+    property alias switchEnable: switchEnable
     Switch {
-        id: enableSwitch
-        x: 8
-        y: 82
-        checked: ControllerThread.enabled
-        onCheckedChanged: ControllerThread.enabled = checked
+        id: switchEnable
+        x: 58
+        y: 88
+        width: 135
+        height: 40
         text: qsTr("Enabled")
-        spacing: 16
+        font.bold: false
+        font.pointSize: 11
+        font.wordSpacing: 0
+        wheelEnabled: false
+        display: AbstractButton.TextBesideIcon
+        spacing: 6
+    }
+
+    Label {
+        x: 79
+        y: 126
+        width: 86
+        height: 20
+        text: qsTr("( Back + Start )")
+        font.italic: true
+        font.pointSize: 8
+    }
+
+    Rectangle {
+        x: 1
+        y: 167
+        width: 248
+        height: 62
+        color: "#f0f0f0"
+    }
+
+    ToolButton {
+        x: 37
+        y: 167
+        width: 86
+        height: 61
+        text: "Show<br>Options"
+        checked: false
+        checkable: false
+        autoRepeat: false
+        flat: false
+        font.pointSize: 8
+    }
+
+    ToolButton {
+        x: 123
+        y: 167
+        width: 86
+        height: 61
+        text: "Plus..."
+        enabled: true
+        font.pointSize: 8
     }
 }

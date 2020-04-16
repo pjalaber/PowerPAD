@@ -1,15 +1,30 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.13
+import QtQuick.Window 2.14
+import com.tekit.powerpad.controllerthread 1.0
 
 ApplicationWindow {
     id: applicationWindow
-    flags: Qt.Tool | Qt.FramelessWindowHint
+    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     visible: false
-    width: 300
-    height: 300
+    width: 250
+    height: 230
 
     RectangleApp {
-        id: rectangleApp
+        labelStatus {
+            text: {
+                if (!ControllerThread.enabled)
+                    qsTr("Disabled")
+                else if (ControllerThread.connectedCount > 0)
+                    qsTr("Connected")
+                else
+                    qsTr("")
+            }
+        }
+        switchEnable {
+            checked: ControllerThread.enabled
+            onCheckedChanged: ControllerThread.enabled = switchEnable.checked
+        }
     }
 
     SysTray {
@@ -23,39 +38,61 @@ ApplicationWindow {
         onTriggered: hide()
     }
 
-    function screenContainsRect(rect)
-    {
-        return (rect.left > 0 && rect.left + rect.width < screen.width &&
-                rect.top > 0 && rect.top + rect.height < screen.height)
-    }
-
-    function showApp(sysTrayIconRect) {
-        if (!timerHide.running) {
-            show()
-            moveNextToTray(sysTrayIconRect)
-            raise()
-            requestActivate()
+    ParallelAnimation {
+        id: animation
+        SmoothedAnimation {
+            id: animationW
+            property: "width"
+            target: applicationWindow
+            duration: 150
+        }
+        SmoothedAnimation {
+            id: animationH
+            property: "height"
+            target: applicationWindow
+            duration: 150
         }
     }
 
-    function moveNextToTray(sysTrayIconRect)
+    function screenContainsRect(rect)
+    {
+        return (rect.left > 0 && rect.left + rect.width < Screen.desktopAvailableWidth &&
+                rect.top > 0 && rect.top + rect.height < Screen.desktopAvailableHeight)
+    }
+
+    function showApp(nextToRect) {
+        if (!timerHide.running)
+            showNextToRect(nextToRect)
+    }
+
+    function showNextToRect(nextToRect)
     {
         /* try to place window above tray icon */
-        var r = Qt.rect(sysTrayIconRect.x + (sysTrayIconRect.width / 2) - (width / 2), sysTrayIconRect.y - height, width, height)
-        if (!screenContainsRect(r)) {
+        var dr = Qt.rect(nextToRect.x + (nextToRect.width / 2) - (width / 2), nextToRect.y - height, width, height)
+        if (!screenContainsRect(dr)) {
             /* try to place window right from tray icon */
-            r = Qt.rect(sysTrayIconRect.x + sysTrayIconRect.width, sysTrayIconRect.y - (height / 2), width, height)
-            if (!screenContainsRect(r)) {
+            dr = Qt.rect(nextToRect.x + nextToRect.width, nextToRect.y - (height / 2), width, height)
+            if (!screenContainsRect(dr)) {
                 /* try to place window under the tray icon */
-                r = Qt.rect(sysTrayIconRect.x + (sysTrayIconRect.width / 2) - (width / 2), sysTrayIconRect.y + sysTrayIconRect.height, width, height)
-                if (!screenContainsRect(r)) {
+                dr = Qt.rect(nextToRect.x + (nextToRect.width / 2) - (width / 2), nextToRect.y + nextToRect.height, width, height)
+                if (!screenContainsRect(dr)) {
                     /* try to place window left from tray icon */
-                    r = Qt.rect(sysTrayIconRect.x - width, sysTrayIconRect.y - (height / 2), width, height)
+                    dr = Qt.rect(nextToRect.x - width, nextToRect.y - (height / 2), width, height)
                 }
             }
         }
-        x = r.left
-        y = r.top
+        x = dr.x
+        y = dr.y
+        width = 1
+        height = 1
+        show()
+        raise()
+        requestActivate()
+        animationW.from = 0
+        animationW.to = dr.width
+        animationH.from = 0
+        animationH.to = dr.height
+        animation.start()
     }
 
     onActiveChanged: {
