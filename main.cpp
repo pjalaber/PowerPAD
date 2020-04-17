@@ -4,7 +4,9 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 #include <QIcon>
+#include <QDebug>
 #include "controller.h"
+#include "helper.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +26,14 @@ int main(int argc, char *argv[])
         Q_UNUSED(scriptEngine)
 
         return &ControllerThread::instance();
+    });
+
+    qmlRegisterSingletonType<Helper>("com.tekit.powerpad.helper", 1, 0, "Helper",
+                                               [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return &Helper::instance();
     });
 
 

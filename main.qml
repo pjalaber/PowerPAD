@@ -2,10 +2,11 @@ import QtQuick 2.12
 import QtQuick.Controls 2.13
 import QtQuick.Window 2.14
 import com.tekit.powerpad.controllerthread 1.0
+import com.tekit.powerpad.helper 1.0
 
 ApplicationWindow {
     id: applicationWindow
-    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    flags: Qt.FramelessWindowHint
     visible: false
     width: 250
     height: 230
@@ -54,12 +55,6 @@ ApplicationWindow {
         }
     }
 
-    function screenContainsRect(rect)
-    {
-        return (rect.left > 0 && rect.left + rect.width < Screen.desktopAvailableWidth &&
-                rect.top > 0 && rect.top + rect.height < Screen.desktopAvailableHeight)
-    }
-
     function showApp(nextToRect) {
         if (!timerHide.running)
             showNextToRect(nextToRect)
@@ -67,20 +62,7 @@ ApplicationWindow {
 
     function showNextToRect(nextToRect)
     {
-        /* try to place window above tray icon */
-        var dr = Qt.rect(nextToRect.x + (nextToRect.width / 2) - (width / 2), nextToRect.y - height, width, height)
-        if (!screenContainsRect(dr)) {
-            /* try to place window right from tray icon */
-            dr = Qt.rect(nextToRect.x + nextToRect.width, nextToRect.y - (height / 2), width, height)
-            if (!screenContainsRect(dr)) {
-                /* try to place window under the tray icon */
-                dr = Qt.rect(nextToRect.x + (nextToRect.width / 2) - (width / 2), nextToRect.y + nextToRect.height, width, height)
-                if (!screenContainsRect(dr)) {
-                    /* try to place window left from tray icon */
-                    dr = Qt.rect(nextToRect.x - width, nextToRect.y - (height / 2), width, height)
-                }
-            }
-        }
+        var dr = Helper.computeBestWindowRect(screen.name, nextToRect, width, height);
         x = dr.x
         y = dr.y
         width = 1
