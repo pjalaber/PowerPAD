@@ -2,7 +2,8 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>SysTray.qml</file>
-        <file>icon.png</file>
         <file>RectangleApp.ui.qml</file>
+        <file>icon.png</file>
+        <file>icon_disabled.png</file>
     </qresource>
 </RCC>

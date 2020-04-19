@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Universal");
 
     QApplication app(argc, argv);
-    app.setWindowIcon(QIcon(":/icon.png"));
 
     qmlRegisterSingletonType<ControllerThread>("com.tekit.powerpad.controllerthread", 1, 0, "ControllerThread",
                                                [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {

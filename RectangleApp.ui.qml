@@ -18,8 +18,8 @@ Rectangle {
     }
 
     Label {
-        x: 65
-        y: 13
+        x: 80
+        y: 10
         width: 87
         height: 28
         text: qsTr("PowerPAD")
@@ -32,7 +32,7 @@ Rectangle {
     property alias labelStatus: labelStatus
     Label {
         id: labelStatus
-        x: 65
+        x: 80
         y: 35
         height: 25
         width: 69
@@ -44,13 +44,16 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
     }
 
+    property alias icon: icon
     Image {
-        x: 15
-        y: 16
-        width: 39
-        height: 39
+        id: icon
+        x: 12
+        y: 5
+        width: 54
+        height: 54
+        antialiasing: true
         layer.smooth: true
-        smooth: true
+        smooth: false
         source: "icon.png"
         fillMode: Image.PreserveAspectFit
     }
@@ -110,5 +113,13 @@ Rectangle {
         text: "Plus..."
         enabled: true
         font.pointSize: 8
+    }
+
+    Flickable {
+        id: flickable
+        x: -88
+        y: 181
+        width: 300
+        height: 300
     }
 }
