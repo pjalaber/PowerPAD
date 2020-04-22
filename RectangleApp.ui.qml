@@ -2,7 +2,12 @@ import QtQuick 2.12
 import QtQuick.Controls 2.13
 
 Rectangle {
+    id: rectangle
     color: "#fafafa"
+    property alias optionsButton: optionsButton
+    property alias labelStatus: labelStatus
+    property alias switchEnable: switchEnable
+    property alias moreButton: moreButton
     antialiasing: false
     anchors.fill: parent
     border.width: 1
@@ -29,7 +34,6 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
     }
 
-    property alias labelStatus: labelStatus
     Label {
         id: labelStatus
         x: 80
@@ -54,72 +58,69 @@ Rectangle {
         antialiasing: true
         layer.smooth: true
         smooth: false
-        source: "icon.png"
+        source: "images/icon.png"
         fillMode: Image.PreserveAspectFit
     }
 
-    property alias switchEnable: switchEnable
     Switch {
         id: switchEnable
         x: 58
         y: 88
-        width: 135
+        width: 154
         height: 40
         text: qsTr("Enabled")
         font.bold: false
-        font.pointSize: 11
+        font.pointSize: 12
         font.wordSpacing: 0
         wheelEnabled: false
         display: AbstractButton.TextBesideIcon
-        spacing: 6
+        spacing: 15
     }
 
     Label {
-        x: 79
+        x: 58
         y: 126
         width: 86
         height: 20
         text: qsTr("( Back + Start )")
         font.italic: true
-        font.pointSize: 8
+        font.pointSize: 10
     }
 
-    Rectangle {
+    ToolBar {
+        id: toolBar
         x: 1
-        y: 167
+        y: 172
         width: 248
-        height: 62
-        color: "#f0f0f0"
-    }
+        height: 56
 
-    ToolButton {
-        x: 37
-        y: 167
-        width: 86
-        height: 61
-        text: "Show<br>Options"
-        checked: false
-        checkable: false
-        autoRepeat: false
-        flat: false
-        font.pointSize: 8
-    }
+        ToolButton {
+            id: moreButton
+            x: 123
+            y: 0
+            width: 95
+            height: 56
+            text: qsTr("More...")
+            autoRepeat: true
+            font.pointSize: 9
+        }
 
-    ToolButton {
-        x: 123
-        y: 167
-        width: 86
-        height: 61
-        text: "Plus..."
-        enabled: true
-        font.pointSize: 8
-    }
-
-    Flickable {
-        id: flickable
-        x: -88
-        y: 181
-        width: 300
-        height: 300
+        ToolButton {
+            id: optionsButton
+            x: 27
+            y: 0
+            width: 95
+            height: 56
+            text: qsTr("Show<br>options")
+            display: AbstractButton.TextBesideIcon
+            font.pointSize: 9
+        }
     }
 }
+
+/*##^##
+Designer {
+    D{i:5;anchors_height:40;anchors_width:135;anchors_x:58;anchors_y:88}
+}
+##^##*/
+

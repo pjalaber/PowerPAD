@@ -3,7 +3,11 @@
         <file>main.qml</file>
         <file>SysTray.qml</file>
         <file>RectangleApp.ui.qml</file>
-        <file>icon.png</file>
-        <file>icon_disabled.png</file>
+        <file>ContextMenu.qml</file>
+        <file>OptionsDialog.ui.qml</file>
+        <file>images/icon.png</file>
+        <file>images/more.png</file>
+        <file>images/options.png</file>
+        <file>images/icon_disabled.png</file>
     </qresource>
 </RCC>

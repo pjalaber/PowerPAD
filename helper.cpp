@@ -1,12 +1,21 @@
 #include <QDebug>
 #include <QDesktopWidget>
 #include <QGuiApplication>
+#include <QProcess>
 #include <QScreen>
 #include "helper.h"
 
 Helper::Helper(QObject *parent) : QObject(parent)
 {
 }
+
+void Helper::restartApp()
+{
+    QCoreApplication *app = QCoreApplication::instance();
+    app->quit();
+    QProcess::startDetached(app->arguments()[0], app->arguments());
+}
+
 
 QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, qint32 windowWidth, qint32 windowHeight)
 {
