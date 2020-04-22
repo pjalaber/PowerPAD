@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[])
 {
-    ControllerThread *controllerThread = &ControllerThread::instance();
+    ControllerThread *controllerThread = ControllerThread::instance();
     if (!controllerThread->start())
         return -1;
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
 
-        return &ControllerThread::instance();
+        return ControllerThread::instance();
     });
 
     qmlRegisterSingletonType<Helper>("com.tekit.powerpad.helper", 1, 0, "Helper",
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
 
-        return &Helper::instance();
+        return Helper::instance();
     });
 
     QQmlApplicationEngine engine;

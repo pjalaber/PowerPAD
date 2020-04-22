@@ -12,7 +12,7 @@ public:
     Q_INVOKABLE void restartApp();
     Q_INVOKABLE QRect computeBestWindowRect(const QString &screenName, const QRect &r,
                                             qint32 windowWidth, qint32 windowHeight);
-    static Helper& instance();
+    static Helper* instance();
 signals:
 
 };

@@ -89,7 +89,7 @@ public:
     static const quint32 SPEED= 800; // pixel per second
     static constexpr double FRAME_DURATION = 1000.0 / FPS;
     ControllerThread();
-    static ControllerThread& instance();
+    static ControllerThread* instance();
     bool start();
     void stop();
 

@@ -9,6 +9,12 @@ Helper::Helper(QObject *parent) : QObject(parent)
 {
 }
 
+Helper* Helper::instance()
+{
+    static Helper *h = new Helper();
+    return h;
+}
+
 void Helper::restartApp()
 {
     QCoreApplication *app = QCoreApplication::instance();
@@ -56,10 +62,4 @@ QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, q
         p.ry() = desktop.y();
 
     return QRect(p.rx(), p.ry(), windowWidth, windowHeight);
-}
-
-Helper& Helper::instance()
-{
-    static Helper h;
-    return h;
 }

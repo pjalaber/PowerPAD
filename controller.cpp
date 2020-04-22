@@ -64,9 +64,9 @@ ControllerThread::ControllerThread() : m_controller(),
 {
 }
 
-ControllerThread& ControllerThread::instance()
+ControllerThread* ControllerThread::instance()
 {
-    static ControllerThread c;
+    static ControllerThread *c = new ControllerThread();
     return c;
 }
 
