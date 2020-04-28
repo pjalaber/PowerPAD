@@ -60,7 +60,7 @@ void Controller::saveCurrentState(void)
 
 ControllerThread::ControllerThread() : m_controller(),
     m_leftThumbDeadZone(DEF_JOYSTICK_DEADZONE), m_shouldStop(false), m_enabled(true),
-    m_connectedCount(0)
+    m_connectedCount(0), m_settings(Settings::instance())
 {
 }
 
@@ -91,7 +91,7 @@ void ControllerThread::updateMousePosition(const Controller &controller, double 
         POINT p;
         if (GetCursorPos(&p))
         {
-            double step = (SPEED / FPS) * delta;
+            double step = (SPEED * m_settings->mouseSpeed() / FPS) * delta;
             double x = (tlx / (double)(JOYSTICK_MAX_VALUE - m_leftThumbDeadZone)) * step;
             double y = (tly / (double)(JOYSTICK_MAX_VALUE - m_leftThumbDeadZone)) * step;
 

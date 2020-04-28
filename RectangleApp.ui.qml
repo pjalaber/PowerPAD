@@ -19,11 +19,11 @@ Rectangle {
         y: 1
         width: 248
         height: 70
-        color: "#3f51b5"
+        color: "#174797"
     }
 
     Label {
-        x: 80
+        x: 74
         y: 10
         width: 87
         height: 28
@@ -36,7 +36,7 @@ Rectangle {
 
     Label {
         id: labelStatus
-        x: 80
+        x: 74
         y: 35
         height: 25
         width: 69
@@ -51,13 +51,10 @@ Rectangle {
     property alias icon: icon
     Image {
         id: icon
-        x: 12
-        y: 5
-        width: 54
-        height: 54
-        antialiasing: true
-        layer.smooth: true
-        smooth: false
+        x: 14
+        y: 12
+        sourceSize.width: 44
+        sourceSize.height: 44
         source: "images/icon.png"
         fillMode: Image.PreserveAspectFit
     }

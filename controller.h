@@ -5,6 +5,7 @@
 #include <QLibrary>
 #include <QQmlEngine>
 #include <xinput.h>
+#include "settings.h"
 
 enum class ButtonState
 {
@@ -74,6 +75,7 @@ protected:
 	bool m_shouldStop;
     bool m_enabled;
     quint32 m_connectedCount;
+    Settings *m_settings;
 
     static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
     void updateMousePosition(const Controller& controller, double delta);
@@ -86,7 +88,7 @@ public:
     static const quint32 JOYSTICK_MAX_VALUE = 32767;
     static const quint32 DEF_JOYSTICK_DEADZONE = (15 * JOYSTICK_MAX_VALUE / 100);
     static const quint32 FPS = 60;
-    static const quint32 SPEED= 800; // pixel per second
+    static const quint32 SPEED = 180; // * 10 * pixel per second
     static constexpr double FRAME_DURATION = 1000.0 / FPS;
     ControllerThread();
     static ControllerThread* instance();

@@ -1,3 +1,22 @@
+
+VERSION_MAJOR = 0
+VERSION_MINOR = 1
+VERSION_PATCH = 0
+
+VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
+QMAKE_TARGET_COMPANY = "Tekit"
+QMAKE_TARGET_PRODUCT = "PowerPAD"
+QMAKE_TARGET_DESCRIPTION = "Desktop navigation using a game controller"
+QMAKE_TARGET_COPYRIGHT = "(c) 2020 Tekit - Philippe Jalaber"
+
+DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\" \
+           APP_COMPANY=\"\\\"$${QMAKE_TARGET_COMPANY}\\\"\" \
+           APP_PRODUCT=\"\\\"$${QMAKE_TARGET_PRODUCT}\\\"\" \
+           APP_DESCRIPTION=\"\\\"$${QMAKE_TARGET_PRODUCT}\\\"\" \
+           APP_COPYRIGHT=\"\\\"$${QMAKE_TARGET_COPYRIGHT}\\\"\" \
+           APP_BUILD_DATE=\"\\\"$${_DATE_}\\\"\" \
+           APP_BUILD_REVISION=\"\\\"$$system(git rev-parse --short=10 HEAD)\\\"\"
+
 QT += quick widgets quickcontrols2
 
 CONFIG += c++11
@@ -16,7 +35,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         controller.cpp \
         helper.cpp \
-        main.cpp
+        main.cpp \
+        settings.cpp
 
 RESOURCES += qml.qrc
 
@@ -38,4 +58,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     controller.h \
-    helper.h
+    helper.h \
+    settings.h

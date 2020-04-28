@@ -7,6 +7,7 @@
 #include <QDebug>
 #include "controller.h"
 #include "helper.h"
+#include "settings.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +16,8 @@ int main(int argc, char *argv[])
         return -1;
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QQuickStyle::setStyle("Universal");
+    QQuickStyle::setStyle("Fusion");
+
 
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/images/icon.png"));
@@ -34,6 +36,14 @@ int main(int argc, char *argv[])
         Q_UNUSED(scriptEngine)
 
         return Helper::instance();
+    });
+
+    qmlRegisterSingletonType<Settings>("com.tekit.powerpad.settings", 1, 0, "Settings",
+                                               [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return Settings::instance();
     });
 
     QQmlApplicationEngine engine;

@@ -8,7 +8,7 @@ SystemTrayIcon
 {
     tooltip: qsTr("PowerPAD")
     visible: true
-    icon.mask: true    
+    icon.mask: true
     icon.source: {
         if (!ControllerThread.enabled)
             "images/icon_disabled.png"

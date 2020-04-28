@@ -1,9 +1,12 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.13
 import QtQuick.Window 2.14
+import QtQuick.Layouts 1.12
 import Qt.labs.platform 1.1
+import QtLocation 5.14
 import com.tekit.powerpad.controllerthread 1.0
 import com.tekit.powerpad.helper 1.0
+import com.tekit.powerpad.settings 1.0
 
 ApplicationWindow {
     id: applicationWindow
@@ -11,6 +14,20 @@ ApplicationWindow {
     visible: false
     width: 250
     height: 230
+
+    // display a popup message on desktop when a controller is connected
+    // or disconnected
+    Connections {
+        property int oldConnectedCount: 0
+        target: ControllerThread
+        onConnectedCountChanged: {
+            if (ControllerThread.connectedCount > oldConnectedCount)
+                sysTray.showMessage("PowerPAD", "Controller has been connected")
+            else
+                sysTray.showMessage("PowerPAD", "Controller has been disconnected")
+            oldConnectedCount = ControllerThread.connectedCount
+        }
+    }
 
     // application window rectangle
     RectangleApp {
@@ -76,17 +93,56 @@ ApplicationWindow {
 
     // options dialog
     ApplicationWindow {
-        title: qsTr("PowerPAD options")
+        title: qsTr("PowerPAD - options")
         flags: Qt.Dialog
         id: optionsDialog
+        minimumWidth: optionsItem.width
+        minimumHeight: optionsItem.height
+        maximumWidth: minimumWidth
+        maximumHeight: minimumHeight
+
         x: (screen.width - width) / 2
         y: (screen.height - height) / 2
+
+        OptionsItem {
+            id: optionsItem
+            aboutText.text: Helper.aboutText
+            mouseSpeedSlider {
+                value: Settings.mouseSpeed
+                onValueChanged: Settings.mouseSpeed = mouseSpeedSlider.value
+            }
+            runOnStartupSwitch {
+                checked: Settings.runOnStartup
+                onCheckedChanged: Settings.runOnStartup = runOnStartupSwitch.checked
+            }
+
+            onAccepted: optionsDialog.accept()
+            onRejected: optionsDialog.reject()
+
+            Component.onCompleted: {
+                var request = new XMLHttpRequest()
+                request.onreadystatechange = function() {
+                    if (request.readyState === XMLHttpRequest.DONE)
+                        aboutLicenseTextArea.text = request.responseText
+                }
+                request.open("GET", "gplv3.txt")
+                request.send()
+            }
+        }        
         onActiveChanged: {
             if (active) // when options dialog becomes active, hide application window
                 applicationWindow.hideApp()
         }
         onClosing: {
             close.accepted = false // refuse options dialog closing, just hide it
+            reject()
+        }
+        function accept() {
+            Settings.commit()
+            hide()
+        }
+        function reject() {
+            Settings.revert()
             hide()
         }
     }

@@ -63,3 +63,11 @@ QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, q
 
     return QRect(p.rx(), p.ry(), windowWidth, windowHeight);
 }
+
+QString Helper::aboutText()
+{
+    return "<b>" APP_PRODUCT " " APP_VERSION "</b><br><br>"
+            "Built on " APP_BUILD_DATE "<br><br>"
+            "From revision " APP_BUILD_REVISION "<br><br>"
+            "Copyright " APP_COPYRIGHT;
+}
