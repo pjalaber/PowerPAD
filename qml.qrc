@@ -11,5 +11,7 @@
         <file>OptionsSlider.ui.qml</file>
         <file>gplv3.txt</file>
         <file>images/icon_disabled.png</file>
+        <file>images/revert.png</file>
+        <file>languages/PowerPAD_fr_FR.qm</file>
     </qresource>
 </RCC>

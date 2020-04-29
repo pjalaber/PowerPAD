@@ -3,6 +3,7 @@
 #include <QGuiApplication>
 #include <QProcess>
 #include <QScreen>
+#include <QDateTime>
 #include "helper.h"
 
 Helper::Helper(QObject *parent) : QObject(parent)
@@ -66,8 +67,13 @@ QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, q
 
 QString Helper::aboutText()
 {
-    return "<b>" APP_PRODUCT " " APP_VERSION "</b><br><br>"
-            "Built on " APP_BUILD_DATE "<br><br>"
-            "From revision " APP_BUILD_REVISION "<br><br>"
-            "Copyright " APP_COPYRIGHT;
+    QDateTime dt;
+    dt.setSecsSinceEpoch(QString(APP_BUILD_DATE).toUInt());
+    QLocale locale = QLocale::system();
+    return QString("<b>%1 %2</b><br><br>%3<br><br>%4<br><br>%5")
+            .arg(APP_PRODUCT)
+            .arg(APP_VERSION)
+            .arg(tr("Built on %1").arg(dt.toString(locale.dateTimeFormat())))
+            .arg(tr("From revision %1").arg(APP_BUILD_REVISION))
+            .arg(tr("Copyright %1").arg(APP_COPYRIGHT));
 }

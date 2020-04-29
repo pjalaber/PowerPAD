@@ -1,4 +1,3 @@
-
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
 VERSION_PATCH = 0
@@ -14,7 +13,7 @@ DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\" \
            APP_PRODUCT=\"\\\"$${QMAKE_TARGET_PRODUCT}\\\"\" \
            APP_DESCRIPTION=\"\\\"$${QMAKE_TARGET_PRODUCT}\\\"\" \
            APP_COPYRIGHT=\"\\\"$${QMAKE_TARGET_COPYRIGHT}\\\"\" \
-           APP_BUILD_DATE=\"\\\"$${_DATE_}\\\"\" \
+           APP_BUILD_DATE=\"\\\"$$system(powershell "(date -UFormat %s).split(',')[0]")\\\"\" \
            APP_BUILD_REVISION=\"\\\"$$system(git rev-parse --short=10 HEAD)\\\"\"
 
 QT += quick widgets quickcontrols2
@@ -60,3 +59,5 @@ HEADERS += \
     controller.h \
     helper.h \
     settings.h
+
+DISTFILES +=

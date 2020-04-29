@@ -5,11 +5,11 @@ import QtQuick.Layouts 1.3
 Item {
     width: 620
     height: 400
+    property alias languageComboBox: languageComboBox
     property alias soundsOnDisableSwitch: soundsOnDisableSwitch
     property alias runOnStartupSwitch: runOnStartupSwitch
     property alias mouseSpeedSlider: mouseSpeedSlider
     property alias aboutLicenseTextArea: aboutLicenseTextArea
-
     property alias aboutText: aboutText
 
     TabBar {
@@ -48,13 +48,30 @@ Item {
             Switch {
                 id: soundsOnDisableSwitch
                 x: 0
-                y: 46
+                y: 88
                 text: qsTr("Play sounds on disable")
             }
 
             Switch {
                 id: runOnStartupSwitch
+                x: 0
+                y: 42
                 text: qsTr("Run on startup")
+            }
+
+            ComboBox {
+                id: languageComboBox
+                x: 65
+                y: 1
+                width: 138
+                height: 27
+            }
+
+            Label {
+                id: label
+                x: 8
+                y: 8
+                text: qsTr("Language:")
             }
         }
 
@@ -171,7 +188,7 @@ Item {
 
 /*##^##
 Designer {
-    D{i:2;anchors_width:240}D{i:1;anchors_height:200;anchors_width:200}D{i:16;anchors_x:"-5";anchors_y:0}
+    D{i:2;anchors_width:240}D{i:1;anchors_height:200;anchors_width:200}D{i:18;anchors_x:"-5";anchors_y:0}
 }
 ##^##*/
 

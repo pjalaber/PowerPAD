@@ -5,10 +5,12 @@ import QtQuick.Layouts 1.3
 Slider {
     id: slider
     height: 50
+    width: 540
 
     property alias labelText: labelText
     property alias lowText: lowText
     property alias highText: highText
+    property alias revertButton: revertButton
 
     Text {
         id: labelText
@@ -42,11 +44,25 @@ Slider {
         anchors.rightMargin: 0
         font.pixelSize: 10
     }
+
+    RoundButton {
+        id: revertButton
+        x: 0
+        y: 0
+        width: 20
+        height: 20
+        icon.source: "images/revert.png"
+        ToolTip.text: qsTr("Default")
+        display: AbstractButton.IconOnly
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: highText.right
+        anchors.leftMargin: 15
+    }
 }
 
 /*##^##
 Designer {
-    D{i:1;anchors_x:0}D{i:3;anchors_x:0;anchors_y:0}
+    D{i:4;anchors_x:541}
 }
 ##^##*/
 
