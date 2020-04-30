@@ -33,6 +33,7 @@ ApplicationWindow {
     // application window rectangle
     RectangleApp {
         id: rectangleApp
+        enabled: ControllerThread.status == ControllerThread.StatusOK
 
         // application window label status that shows:
         // - "Connected" if a controller is connected
@@ -46,6 +47,18 @@ ApplicationWindow {
                     qsTr("Connected")
                 else
                     ""
+            }
+        }
+
+        statusErrorText {
+            visible: ControllerThread.status != ControllerThread.StatusOK
+            text: {
+               if (ControllerThread.status == ControllerThread.StatusXInputLibraryNotFound)
+                    qsTr("Error: xinput library not found !");
+               else if (ControllerThread.status == ControllerThread.StatusXInputSymbolNotFound)
+                   qsTr("Error: xinput symbol not found !");
+               else
+                   ""
             }
         }
 

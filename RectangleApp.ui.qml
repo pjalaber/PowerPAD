@@ -8,6 +8,7 @@ Rectangle {
     property alias labelStatus: labelStatus
     property alias switchEnable: switchEnable
     property alias moreButton: moreButton
+    property alias statusErrorText: statusErrorText
     antialiasing: false
     anchors.fill: parent
     border.width: 1
@@ -62,7 +63,7 @@ Rectangle {
     Switch {
         id: switchEnable
         x: 58
-        y: 88
+        y: 94
         width: 154
         height: 40
         text: qsTr("Enabled")
@@ -76,7 +77,7 @@ Rectangle {
 
     Label {
         x: 58
-        y: 126
+        y: 132
         width: 86
         height: 20
         text: qsTr("( Back + Start )")
@@ -113,11 +114,24 @@ Rectangle {
             font.pointSize: 9
         }
     }
+
+    Text {
+        id: statusErrorText
+        y: 77
+        height: 14
+        color: "#e63333"
+        text: "Status error"
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        anchors.left: parent.left
+        anchors.leftMargin: 14
+        font.pixelSize: 12
+    }
 }
 
 /*##^##
 Designer {
-    D{i:5;anchors_height:40;anchors_width:135;anchors_x:58;anchors_y:88}
+    D{i:5;anchors_height:40;anchors_width:135;anchors_x:58;anchors_y:88}D{i:10;anchors_width:228;anchors_x:14}
 }
 ##^##*/
 

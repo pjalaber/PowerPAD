@@ -66,6 +66,11 @@ class ControllerThread: public QThread
     Q_OBJECT
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(quint32 connectedCount READ connectedCount NOTIFY connectedCountChanged)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+public:
+    enum Status { StatusOK, StatusXInputLibraryNotFound, StatusXInputSymbolNotFound };
+    Q_ENUM(Status)
+
 private:
     QLibrary m_lib;
 
@@ -75,6 +80,7 @@ protected:
 	bool m_shouldStop;
     bool m_enabled;
     quint32 m_connectedCount;
+    Status m_status;
     Settings *m_settings;
 
     static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
@@ -101,8 +107,12 @@ public:
     quint32 connectedCount();
     void setConnectedCount(const quint32 &connectedCount);
 
+    Status status();
+    void setStatus(const Status &status);
+
 signals:
     void enabledChanged();
     void connectedCountChanged();
+    void statusChanged();
 };
 

@@ -35,8 +35,7 @@ int main(int argc, char *argv[])
     }
 
     ControllerThread *controllerThread = ControllerThread::instance();
-    if (!controllerThread->start())
-        return -1;
+    controllerThread->start();
 
     qmlRegisterSingletonType<ControllerThread>("com.tekit.powerpad.controllerthread", 1, 0, "ControllerThread",
                                                [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {

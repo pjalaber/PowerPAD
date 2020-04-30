@@ -60,7 +60,7 @@ void Controller::saveCurrentState(void)
 
 ControllerThread::ControllerThread() : m_controller(),
     m_leftThumbDeadZone(DEF_JOYSTICK_DEADZONE), m_shouldStop(false), m_enabled(true),
-    m_connectedCount(0), m_settings(Settings::instance())
+    m_connectedCount(0), m_status(StatusOK), m_settings(Settings::instance())
 {
 }
 
@@ -191,18 +191,21 @@ void ControllerThread::run()
 bool ControllerThread::start()
 {
     m_lib.setFileName(QStringLiteral("xinput1_4.dll"));
-    if (!m_lib.load())
-    {
+    if (!m_lib.load()) {
         m_lib.setFileName(QStringLiteral("xinput1_3.dll"));
         m_lib.load();
     }
 
-    if (!m_lib.isLoaded())
+    if (!m_lib.isLoaded()) {
+        setStatus(StatusXInputLibraryNotFound);
         return false;
+    }
 
     XInputGetStateL = (XInputGetState_t) m_lib.resolve("XInputGetState");
-    if (XInputGetStateL == NULL)
+    if (XInputGetStateL == NULL) {
+        setStatus(StatusXInputSymbolNotFound);
         return false;
+    }
 
 
     m_shouldStop = false;
@@ -223,14 +226,14 @@ bool ControllerThread::enabled()
 
 void ControllerThread::setEnabled(const bool &enabled)
 {
-    if (m_enabled == enabled)
-        return;
-    m_enabled = enabled;
-    emit enabledChanged();
-    if (m_enabled)
-        qInfo().nospace() << "Controller thread enabled";
-    else
-        qInfo().nospace() << "Controller thread disabled";
+    if (m_enabled != enabled) {
+        m_enabled = enabled;
+        emit enabledChanged();
+        if (m_enabled)
+            qInfo().nospace() << "Controller thread enabled";
+        else
+            qInfo().nospace() << "Controller thread disabled";
+    }
 }
 
 
@@ -242,9 +245,21 @@ quint32 ControllerThread::connectedCount()
 void ControllerThread::setConnectedCount(const quint32 &connectedCount)
 {
     Q_ASSERT(connectedCount <= XUSER_MAX_COUNT);
-    if (m_connectedCount == connectedCount)
-        return;
-    m_connectedCount = connectedCount;
-    emit connectedCountChanged();
+    if (m_connectedCount != connectedCount) {
+        m_connectedCount = connectedCount;
+        emit connectedCountChanged();
+    }
 }
 
+ControllerThread::Status ControllerThread::status()
+{
+    return m_status;
+}
+
+void ControllerThread::setStatus(const Status &status)
+{
+    if (m_status != status) {
+        m_status = status;
+        emit statusChanged();
+    }
+}
