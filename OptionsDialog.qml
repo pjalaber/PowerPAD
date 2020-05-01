@@ -49,24 +49,33 @@ ApplicationWindow {
             }
         }
         leftJoystickDeadZone {
+            from: Settings.joystickDeadZoneMin()
+            to: Settings.joystickDeadZoneMax()
+            stepSize: (leftJoystickDeadZone.to - leftJoystickDeadZone.from) / 10
             value: Settings.leftJoystickDeadZone
             onValueChanged: Settings.leftJoystickDeadZone = leftJoystickDeadZone.value
             revertButton {
-                onClicked: Settings.setLeftJoystickDeadZoneDefault()
+                onClicked: Settings.leftJoystickDeadZone = Settings.joystickDeadZoneDefault()
             }
         }
         rightJoystickDeadZone {
+            from: Settings.joystickDeadZoneMin()
+            to: Settings.joystickDeadZoneMax()
+            stepSize: (rightJoystickDeadZone.to - rightJoystickDeadZone.from) / 10
             value: Settings.rightJoystickDeadZone
             onValueChanged: Settings.rightJoystickDeadZone = rightJoystickDeadZone.value
             revertButton {
-                onClicked: Settings.setRightJoystickDeadZoneDefault()
+                onClicked: Settings.rightJoystickDeadZone = Settings.joystickDeadZoneDefault()
             }
         }
         mouseSpeedSlider {
+            from: Settings.mouseSpeedMin()
+            to: Settings.mouseSpeedMax()
+            stepSize: (mouseSpeedSlider.to - mouseSpeedSlider.from) / 10
             value: Settings.mouseSpeed
             onValueChanged: Settings.mouseSpeed = mouseSpeedSlider.value
             revertButton {
-                onClicked: Settings.setMouseSpeedDefault()
+                onClicked: Settings.mouseSpeed = Settings.mouseSpeedDefault();
             }
         }
 

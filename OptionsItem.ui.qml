@@ -84,12 +84,9 @@ Item {
                 y: 0
                 width: 319
                 height: 50
-                from: 0
-                to: 32767
-                stepSize: 1000
-                lowText.text: qsTr("Small")
+                lowText.text: qsTr("0%")
                 labelText.text: qsTr("Left joystick dead zone:")
-                highText.text: qsTr("Big")
+                highText.text: qsTr("100%")
                 snapMode: "SnapAlways"
             }
 
@@ -99,12 +96,9 @@ Item {
                 y: 62
                 width: 319
                 height: 50
-                from: 0
-                to: 32767
-                stepSize: 1000
-                lowText.text: qsTr("Small")
+                lowText.text: qsTr("0%")
                 labelText.text: qsTr("Right joystick dead zone:")
-                highText.text: qsTr("Big")
+                highText.text: qsTr("100%")
                 snapMode: "SnapAlways"
             }
         }
@@ -120,9 +114,6 @@ Item {
                 lowText.text: qsTr("Slow")
                 labelText.text: qsTr("Mouse cursor speed:")
                 snapMode: "SnapAlways"
-                from: 1
-                to: 10
-                stepSize: 1
             }
         }
 

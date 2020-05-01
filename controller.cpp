@@ -94,8 +94,8 @@ void ControllerThread::updateMousePosition(const Controller &controller, double 
         if (GetCursorPos(&p))
         {
             double step = (SPEED * m_settings->mouseSpeed() / FPS) * delta;
-            double x = (tlx / (double)(Settings::JOYSTICK_DEADZONE_MAX - leftDeadZone)) * step;
-            double y = (tly / (double)(Settings::JOYSTICK_DEADZONE_MAX - leftDeadZone)) * step;
+            double x = (tlx / (double)(INT16_MAX - leftDeadZone)) * step;
+            double y = (tly / (double)(INT16_MAX - leftDeadZone)) * step;
 
             p.x += (int)x;
             p.y -= (int)y;

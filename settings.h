@@ -60,15 +60,19 @@ public:
 
     void setLeftJoystickDeadZone(const quint32 &leftJoystickDeadZone);
     quint32 leftJoystickDeadZone();
-    Q_INVOKABLE void setLeftJoystickDeadZoneDefault();
 
     void setRightJoystickDeadZone(const quint32 &rightJoystickDeadZone);
     quint32 rightJoystickDeadZone();
-    Q_INVOKABLE void setRightJoystickDeadZoneDefault();
+
+    Q_INVOKABLE quint32 joystickDeadZoneDefault();
+    Q_INVOKABLE quint32 joystickDeadZoneMin();
+    Q_INVOKABLE quint32 joystickDeadZoneMax();
 
     void setMouseSpeed(const double &mouseSpeed);
     double mouseSpeed();
-    Q_INVOKABLE void setMouseSpeedDefault();
+    Q_INVOKABLE double mouseSpeedDefault();
+    Q_INVOKABLE double mouseSpeedMin();
+    Q_INVOKABLE double mouseSpeedMax();
 
     Q_INVOKABLE void commit();
     Q_INVOKABLE void revert();
