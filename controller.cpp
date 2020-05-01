@@ -59,7 +59,7 @@ void Controller::saveCurrentState(void)
 }
 
 ControllerThread::ControllerThread() : m_controller(),
-    m_leftThumbDeadZone(DEF_JOYSTICK_DEADZONE), m_shouldStop(false), m_enabled(true),
+    m_shouldStop(false), m_enabled(true),
     m_connectedCount(0), m_status(StatusOK), m_settings(Settings::instance())
 {
 }
@@ -83,17 +83,19 @@ void ControllerThread::updateMousePosition(const Controller &controller, double 
     if (!m_enabled)
         return;
 
+    quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
+
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
-    int tlx = getNormDeadZone(gamepad.sThumbLX, m_leftThumbDeadZone);
-    int tly = getNormDeadZone(gamepad.sThumbLY, m_leftThumbDeadZone);
+    int tlx = getNormDeadZone(gamepad.sThumbLX, leftDeadZone);
+    int tly = getNormDeadZone(gamepad.sThumbLY, leftDeadZone);
     if (tlx != 0 || tly != 0)
     {
         POINT p;
         if (GetCursorPos(&p))
         {
             double step = (SPEED * m_settings->mouseSpeed() / FPS) * delta;
-            double x = (tlx / (double)(JOYSTICK_MAX_VALUE - m_leftThumbDeadZone)) * step;
-            double y = (tly / (double)(JOYSTICK_MAX_VALUE - m_leftThumbDeadZone)) * step;
+            double x = (tlx / (double)(Settings::JOYSTICK_DEADZONE_MAX - leftDeadZone)) * step;
+            double y = (tly / (double)(Settings::JOYSTICK_DEADZONE_MAX - leftDeadZone)) * step;
 
             p.x += (int)x;
             p.y -= (int)y;

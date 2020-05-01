@@ -91,8 +91,6 @@ private:
     void run();
 
 public:
-    static const quint32 JOYSTICK_MAX_VALUE = 32767;
-    static const quint32 DEF_JOYSTICK_DEADZONE = (15 * JOYSTICK_MAX_VALUE / 100);
     static const quint32 FPS = 60;
     static const quint32 SPEED = 180; // * 10 * pixel per second
     static constexpr double FRAME_DURATION = 1000.0 / FPS;

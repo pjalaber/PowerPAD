@@ -25,13 +25,15 @@ int main(int argc, char *argv[])
     QString lang = settings->language();
     if (lang == Settings::LANGUAGE_STRING_SYSTEM)
         lang = QLocale::system().name();
-    if (!translator.load(QString(":/languages/PowerPAD_%1.qm").arg(lang)))
-        qDebug().nospace() << "Failed to load translator for language " << lang;
-    else {
-        if (!app.installTranslator(&translator))
-            qDebug().nospace() << "Failed to install translator for language " << lang;
-        else
-            qDebug().nospace() << "Translator for language " << lang << " successfully installed";
+    if (lang != "en_EN") {
+        if (!translator.load(QString(":/languages/PowerPAD_%1.qm").arg(lang)))
+            qDebug().nospace() << "Failed to load translator for language " << lang;
+        else {
+            if (!app.installTranslator(&translator))
+                qDebug().nospace() << "Failed to install translator for language " << lang;
+            else
+                qDebug().nospace() << "Translator for language " << lang << " successfully installed";
+        }
     }
 
     ControllerThread *controllerThread = ControllerThread::instance();

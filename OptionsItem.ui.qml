@@ -11,13 +11,15 @@ Item {
     property alias mouseSpeedSlider: mouseSpeedSlider
     property alias aboutLicenseTextArea: aboutLicenseTextArea
     property alias aboutText: aboutText
+    property alias leftJoystickDeadZone: leftJoystickDeadZone
+    property alias rightJoystickDeadZone: rightJoystickDeadZone
 
     TabBar {
         id: tabBar
         position: TabBar.Header
         anchors.bottomMargin: 56
         anchors.fill: parent
-        currentIndex: 0
+        currentIndex: 1
 
         TabButton {
             text: qsTr("General")
@@ -75,7 +77,37 @@ Item {
             }
         }
 
-        Item {}
+        Item {
+            OptionsSlider {
+                id: leftJoystickDeadZone
+                x: 0
+                y: 0
+                width: 319
+                height: 50
+                from: 0
+                to: 32767
+                stepSize: 1000
+                lowText.text: qsTr("Small")
+                labelText.text: qsTr("Left joystick dead zone:")
+                highText.text: qsTr("Big")
+                snapMode: "SnapAlways"
+            }
+
+            OptionsSlider {
+                id: rightJoystickDeadZone
+                x: 0
+                y: 62
+                width: 319
+                height: 50
+                from: 0
+                to: 32767
+                stepSize: 1000
+                lowText.text: qsTr("Small")
+                labelText.text: qsTr("Right joystick dead zone:")
+                highText.text: qsTr("Big")
+                snapMode: "SnapAlways"
+            }
+        }
 
         Item {
             OptionsSlider {
@@ -188,7 +220,8 @@ Item {
 
 /*##^##
 Designer {
-    D{i:2;anchors_width:240}D{i:1;anchors_height:200;anchors_width:200}D{i:18;anchors_x:"-5";anchors_y:0}
+    D{i:2;anchors_width:240}D{i:1;anchors_height:200;anchors_width:200}D{i:20;anchors_x:"-5";anchors_y:0}
+D{i:19;anchors_x:"-5";anchors_y:0}
 }
 ##^##*/
 

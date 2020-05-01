@@ -20,13 +20,6 @@ ApplicationWindow {
     OptionsItem {
         id: optionsItem
         aboutText.text: Helper.aboutText
-        mouseSpeedSlider {
-            value: Settings.mouseSpeed
-            onValueChanged: Settings.mouseSpeed = mouseSpeedSlider.value
-            revertButton {
-                onClicked: Settings.setMouseSpeedDefault()
-            }
-        }
         runOnStartupSwitch {
             checked: Settings.runOnStartup
             onCheckedChanged: Settings.runOnStartup = runOnStartupSwitch.checked
@@ -53,6 +46,27 @@ ApplicationWindow {
                     verticalAlignment: Text.AlignVCenter
                 }
                 highlighted: optionsItem.languageComboBox.highlightedIndex === index
+            }
+        }
+        leftJoystickDeadZone {
+            value: Settings.leftJoystickDeadZone
+            onValueChanged: Settings.leftJoystickDeadZone = leftJoystickDeadZone.value
+            revertButton {
+                onClicked: Settings.setLeftJoystickDeadZoneDefault()
+            }
+        }
+        rightJoystickDeadZone {
+            value: Settings.rightJoystickDeadZone
+            onValueChanged: Settings.rightJoystickDeadZone = rightJoystickDeadZone.value
+            revertButton {
+                onClicked: Settings.setRightJoystickDeadZoneDefault()
+            }
+        }
+        mouseSpeedSlider {
+            value: Settings.mouseSpeed
+            onValueChanged: Settings.mouseSpeed = mouseSpeedSlider.value
+            revertButton {
+                onClicked: Settings.setMouseSpeedDefault()
             }
         }
 
