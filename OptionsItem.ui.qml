@@ -10,6 +10,7 @@ Item {
     property alias runOnStartupSwitch: runOnStartupSwitch
     property alias mouseSpeedSlider: mouseSpeedSlider
     property alias mouseAccelerationSlider: mouseAccelerationSlider
+    property alias mouseScrollSpeedSlider: mouseScrollSpeedSlider
     property alias aboutLicenseTextArea: aboutLicenseTextArea
     property alias aboutText: aboutText
     property alias leftJoystickDeadZone: leftJoystickDeadZone
@@ -126,6 +127,18 @@ Item {
                 highText.text: qsTr("Fast")
                 lowText.text: qsTr("Off")
                 labelText.text: qsTr("Mouse cursor acceleration:")
+                snapMode: "SnapAlways"
+            }
+
+            OptionsSlider {
+                id: mouseScrollSpeedSlider
+                x: 0
+                y: 124
+                width: 319
+                height: 50
+                highText.text: qsTr("Fast")
+                lowText.text: qsTr("Slow")
+                labelText.text: qsTr("Scroll speed:")
                 snapMode: "SnapAlways"
             }
         }

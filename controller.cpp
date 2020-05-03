@@ -118,7 +118,7 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
 
     int tly = getNormDeadZone(gamepad.sThumbRY, rightDeadZone);
     if ( tly != 0) {
-        quint32 scroll = (tly / (double)(INT16_MAX - rightDeadZone)) * 120;
+        quint32 scroll = (tly / (double)(INT16_MAX - rightDeadZone)) * m_settings->mouseScrollSpeed() * 30;
 
         INPUT input = {};
         input.type = INPUT_MOUSE;

@@ -12,6 +12,7 @@ class Settings : public QObject
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(double mouseSpeed READ mouseSpeed WRITE setMouseSpeed NOTIFY mouseSpeedChanged)
     Q_PROPERTY(double mouseAcceleration READ mouseAcceleration WRITE setMouseAcceleration NOTIFY mouseAccelerationChanged)
+    Q_PROPERTY(double mouseScrollSpeed READ mouseScrollSpeed WRITE setMouseScrollSpeed NOTIFY mouseScrollSpeedChanged)
     Q_PROPERTY(quint32 leftJoystickDeadZone READ leftJoystickDeadZone WRITE setLeftJoystickDeadZone NOTIFY leftJoystickDeadZoneChanged)
     Q_PROPERTY(quint32 rightJoystickDeadZone READ rightJoystickDeadZone WRITE setRightJoystickDeadZone NOTIFY rightJoystickDeadZoneChanged)
 
@@ -32,6 +33,9 @@ public:
     static const QString MOUSE_ACCELERATION_KEY;
     static const double MOUSE_ACCELERATION_DEFAULT, MOUSE_ACCELERATION_MIN, MOUSE_ACCELERATION_MAX;
 
+    static const QString MOUSE_SCROLL_SPEED_KEY;
+    static const double MOUSE_SCROLL_SPEED_DEFAULT, MOUSE_SCROLL_SPEED_MIN, MOUSE_SCROLL_SPEED_MAX;
+
     static const QString LEFT_JOYSTICK_DEADZONE_KEY;
     static const QString RIGHT_JOYSTICK_DEADZONE_KEY;
     static const quint32 JOYSTICK_DEADZONE_DEFAULT, JOYSTICK_DEADZONE_MIN, JOYSTICK_DEADZONE_MAX;
@@ -40,6 +44,7 @@ private:
     QSettings m_settings, m_winStartupSettings;
     double m_mouseSpeed;
     double m_mouseAcceleration;
+    double m_mouseScrollSpeed;
     bool m_runOnStartup;
     bool m_playSoundsOnDisable;
     quint32 m_leftJoystickDeadZone;
@@ -48,6 +53,7 @@ private:
 
 protected:
     static double mouseSpeedNormalize(double mouseSpeed);
+    static double mouseScrollSpeedNormalize(double mouseScrollSpeed);
     static double mouseAccelerationNormalize(double mouseAcceleration);
     static quint32 joystickNormalize(quint32 joystickSpeed);
 
@@ -86,12 +92,19 @@ public:
     Q_INVOKABLE double mouseAccelerationMin();
     Q_INVOKABLE double mouseAccelerationMax();
 
+    void setMouseScrollSpeed(const double &mouseScrollSpeed);
+    double mouseScrollSpeed();
+    Q_INVOKABLE double mouseScrollSpeedDefault();
+    Q_INVOKABLE double mouseScrollSpeedMin();
+    Q_INVOKABLE double mouseScrollSpeedMax();
+
     Q_INVOKABLE void commit();
     Q_INVOKABLE void revert();
 
 signals:
     void mouseSpeedChanged();
     void mouseAccelerationChanged();
+    void mouseScrollSpeedChanged();
     void runOnStartupChanged();
     void playSoundsOnDisableChanged();
     void languageChanged();

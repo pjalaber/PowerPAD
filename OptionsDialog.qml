@@ -88,6 +88,16 @@ ApplicationWindow {
                 onClicked: Settings.mouseAcceleration = Settings.mouseAccelerationDefault();
             }
         }
+        mouseScrollSpeedSlider {
+            from: Settings.mouseScrollSpeedMin()
+            to: Settings.mouseScrollSpeedMax()
+            stepSize: (mouseScrollSpeedSlider.to - mouseScrollSpeedSlider.from) / 10
+            value: Settings.mouseScrollSpeed
+            onValueChanged: Settings.mouseScrollSpeed = mouseScrollSpeedSlider.value
+            revertButton {
+                onClicked: Settings.mouseScrollSpeed = Settings.mouseScrollSpeedDefault();
+            }
+        }
 
         onAccepted: optionsDialog.accept()
         onRejected: optionsDialog.reject()
