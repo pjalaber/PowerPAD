@@ -64,7 +64,7 @@ Settings* Settings::instance()
     return s;
 }
 
-void Settings::setMouseSpeed(const double &mouseSpeed)
+void Settings::setMouseSpeed(double mouseSpeed)
 {
     if (m_mouseSpeed == mouseSpeed)
         return;
@@ -92,7 +92,7 @@ double Settings::mouseSpeedMax()
     return MOUSE_SPEED_MAX;
 }
 
-void Settings::setMouseAcceleration(const double &mouseAcceleration)
+void Settings::setMouseAcceleration(double mouseAcceleration)
 {
     if (m_mouseAcceleration == mouseAcceleration)
         return;
@@ -120,7 +120,7 @@ double Settings::mouseAccelerationMax()
     return MOUSE_ACCELERATION_MAX;
 }
 
-void Settings::setMouseScrollSpeed(const double &mouseScrollSpeed)
+void Settings::setMouseScrollSpeed(double mouseScrollSpeed)
 {
     if (m_mouseScrollSpeed == mouseScrollSpeed)
         return;
@@ -148,7 +148,7 @@ double Settings::mouseScrollSpeedMax()
     return MOUSE_SCROLL_SPEED_MAX;
 }
 
-void Settings::setRunOnStartup(const bool &runOnStartup)
+void Settings::setRunOnStartup(bool runOnStartup)
 {
     if (m_runOnStartup != runOnStartup) {
         m_runOnStartup = runOnStartup;
@@ -161,7 +161,7 @@ bool Settings::runOnStartup()
     return m_runOnStartup;
 }
 
-void Settings::setPlaySoundsOnDisable(const bool &playSoundsOnDisable)
+void Settings::setPlaySoundsOnDisable(bool playSoundsOnDisable)
 {
     if (m_playSoundsOnDisable != playSoundsOnDisable) {
         m_playSoundsOnDisable = playSoundsOnDisable;
@@ -187,7 +187,7 @@ QString Settings::language()
     return m_language;
 }
 
-void Settings::setLeftJoystickDeadZone(const quint32 &leftJoystickDeadZone)
+void Settings::setLeftJoystickDeadZone(quint32 leftJoystickDeadZone)
 {
     if (m_leftJoystickDeadZone != leftJoystickDeadZone)
     {
@@ -201,7 +201,7 @@ quint32 Settings::leftJoystickDeadZone()
     return m_leftJoystickDeadZone;
 }
 
-void Settings::setRightJoystickDeadZone(const quint32 &rightJoystickDeadZone)
+void Settings::setRightJoystickDeadZone(quint32 rightJoystickDeadZone)
 {
     if (m_rightJoystickDeadZone != rightJoystickDeadZone)
     {

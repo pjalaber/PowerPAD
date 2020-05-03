@@ -74,13 +74,13 @@ public:
     void stop();
 
     bool enabled();
-    void setEnabled(const bool &enabled);
+    void setEnabled(bool enabled);
 
     quint32 connectedCount();
-    void setConnectedCount(const quint32 &connectedCount);
+    void setConnectedCount(quint32 connectedCount);
 
     Status status();
-    void setStatus(const Status &status);
+    void setStatus(Status status);
 
 signals:
     void enabledChanged();

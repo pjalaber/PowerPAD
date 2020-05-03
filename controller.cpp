@@ -252,7 +252,7 @@ bool ControllerThread::enabled()
     return m_enabled;
 }
 
-void ControllerThread::setEnabled(const bool &enabled)
+void ControllerThread::setEnabled(bool enabled)
 {
     if (m_enabled != enabled) {
         m_enabled = enabled;
@@ -270,7 +270,7 @@ quint32 ControllerThread::connectedCount()
     return m_connectedCount;
 }
 
-void ControllerThread::setConnectedCount(const quint32 &connectedCount)
+void ControllerThread::setConnectedCount(quint32 connectedCount)
 {
     Q_ASSERT(connectedCount <= XUSER_MAX_COUNT);
     if (m_connectedCount != connectedCount) {
@@ -284,7 +284,7 @@ ControllerThread::Status ControllerThread::status()
     return m_status;
 }
 
-void ControllerThread::setStatus(const Status &status)
+void ControllerThread::setStatus(Status status)
 {
     if (m_status != status) {
         m_status = status;

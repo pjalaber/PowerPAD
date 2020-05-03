@@ -61,38 +61,38 @@ public:
     explicit Settings(QObject *parent = nullptr);
     static Settings* instance();
 
-    void setRunOnStartup(const bool &runOnStartup);
+    void setRunOnStartup(bool runOnStartup);
     bool runOnStartup();
 
-    void setPlaySoundsOnDisable(const bool &playSoundsOnDisable);
+    void setPlaySoundsOnDisable(bool playSoundsOnDisable);
     bool playSoundsOnDisable();
 
     void setLanguage(const QString &language);
     QString language();
 
-    void setLeftJoystickDeadZone(const quint32 &leftJoystickDeadZone);
+    void setLeftJoystickDeadZone(quint32 leftJoystickDeadZone);
     quint32 leftJoystickDeadZone();
 
-    void setRightJoystickDeadZone(const quint32 &rightJoystickDeadZone);
+    void setRightJoystickDeadZone(quint32 rightJoystickDeadZone);
     quint32 rightJoystickDeadZone();
 
     Q_INVOKABLE quint32 joystickDeadZoneDefault();
     Q_INVOKABLE quint32 joystickDeadZoneMin();
     Q_INVOKABLE quint32 joystickDeadZoneMax();
 
-    void setMouseSpeed(const double &mouseSpeed);
+    void setMouseSpeed(double mouseSpeed);
     double mouseSpeed();
     Q_INVOKABLE double mouseSpeedDefault();
     Q_INVOKABLE double mouseSpeedMin();
     Q_INVOKABLE double mouseSpeedMax();
 
-    void setMouseAcceleration(const double &mouseAcceleration);
+    void setMouseAcceleration(double mouseAcceleration);
     double mouseAcceleration();
     Q_INVOKABLE double mouseAccelerationDefault();
     Q_INVOKABLE double mouseAccelerationMin();
     Q_INVOKABLE double mouseAccelerationMax();
 
-    void setMouseScrollSpeed(const double &mouseScrollSpeed);
+    void setMouseScrollSpeed(double mouseScrollSpeed);
     double mouseScrollSpeed();
     Q_INVOKABLE double mouseScrollSpeedDefault();
     Q_INVOKABLE double mouseScrollSpeedMin();
