@@ -32,9 +32,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        button.cpp \
         controller.cpp \
         helper.cpp \
         main.cpp \
+        mouseacceleration.cpp \
         settings.cpp
 
 RESOURCES += qml.qrc
@@ -56,8 +58,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    button.h \
     controller.h \
     helper.h \
+    mouseacceleration.h \
     settings.h
 
 DISTFILES +=

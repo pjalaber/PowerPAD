@@ -5,39 +5,9 @@
 #include <QLibrary>
 #include <QQmlEngine>
 #include <xinput.h>
+#include "mouseacceleration.h"
+#include "button.h"
 #include "settings.h"
-
-enum class ButtonState
-{
-    Down, StillDown, Up, None
-};
-
-class ButtonHistory
-{
-public:
-    ButtonState m_buttonState;
-    QElapsedTimer m_timer;
-
-    ButtonHistory() : m_buttonState(ButtonState::None), m_timer()
-    {
-    }
-	bool IsStillActive(ButtonState buttonState)
-	{
-        if (m_buttonState != buttonState || !m_timer.isValid())
-			return false;
-        return (m_timer.elapsed() <= 200);
-	}
-	void StartActive(ButtonState buttonState)
-	{
-		m_buttonState = buttonState;
-        m_timer.start();
-	}
-	void Clear()
-	{
-        m_buttonState = ButtonState::None;
-        m_timer.invalidate();
-    }
-};
 
 class Controller
 {
@@ -47,9 +17,12 @@ protected:
 public:
     static const quint32 CURRENT_STATE = 0;
     static const quint32 PREVIOUS_STATE = 1;
-	XINPUT_STATE m_state[2];
+    XINPUT_STATE m_state[2];
+    bool m_accelerationGraceTimeState;
+    QElapsedTimer m_accelerationTimer;
 	ButtonHistory m_startButtonHistory;
 	ButtonHistory m_backButtonHistory;
+    MouseAcceleration m_mouseAcceleration;
     Controller();
     bool buttonIsDown(DWORD button, quint32 state) const;
     ButtonState getButtonState(DWORD button) const;
@@ -84,7 +57,7 @@ protected:
     Settings *m_settings;
 
     static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
-    void updateMousePosition(const Controller& controller, double delta);
+    void updateMousePosition(Controller& controller, double delta);
     void triggerMouseEvent(const Controller& controller);
 
 private:

@@ -7,7 +7,7 @@ typedef DWORD (WINAPI *XInputGetState_t)(DWORD dwUserIndex, XINPUT_STATE *pState
 static XInputGetState_t XInputGetStateL;
 
 Controller::Controller() : m_connected(false),
-    m_connectCheckTimer(), m_state()
+    m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_accelerationTimer()
 {
 }
 
@@ -78,7 +78,7 @@ qint32 ControllerThread::getNormDeadZone(SHORT value, SHORT deadZone)
         return ((value < 0) ? -1 : 1) * (abs(value) - deadZone);
 }
 
-void ControllerThread::updateMousePosition(const Controller &controller, double delta)
+void ControllerThread::updateMousePosition(Controller &controller, double delta)
 {
     if (!m_enabled)
         return;
@@ -93,7 +93,12 @@ void ControllerThread::updateMousePosition(const Controller &controller, double 
         POINT p;
         if (GetCursorPos(&p))
         {
-            double step = (SPEED * m_settings->mouseSpeed() / FPS) * delta;
+            qint32 accLimit = 0.90 * (INT16_MAX - leftDeadZone);
+            bool accHint = (abs(tlx) >= accLimit || abs(tly) >= accLimit);
+            controller.m_mouseAcceleration.setAccelerationHint(accHint);
+            double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
+
+            double step = (SPEED * m_settings->mouseSpeed() * acc / FPS) * delta;
             double x = (tlx / (double)(INT16_MAX - leftDeadZone)) * step;
             double y = (tly / (double)(INT16_MAX - leftDeadZone)) * step;
 
@@ -162,15 +167,15 @@ void ControllerThread::run()
 
             ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
             ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
-            if (start == ButtonState::Up && !controller.m_startButtonHistory.IsStillActive(start))
-                controller.m_startButtonHistory.StartActive(ButtonState::Up);
-            if (back == ButtonState::Up && !controller.m_backButtonHistory.IsStillActive(back))
-                controller.m_backButtonHistory.StartActive(ButtonState::Up);
-            if (controller.m_startButtonHistory.IsStillActive(ButtonState::Up) &&
-                    controller.m_backButtonHistory.IsStillActive(ButtonState::Up))
+            if (start == ButtonState::Up && !controller.m_startButtonHistory.isStillActive(start))
+                controller.m_startButtonHistory.startActive(ButtonState::Up);
+            if (back == ButtonState::Up && !controller.m_backButtonHistory.isStillActive(back))
+                controller.m_backButtonHistory.startActive(ButtonState::Up);
+            if (controller.m_startButtonHistory.isStillActive(ButtonState::Up) &&
+                    controller.m_backButtonHistory.isStillActive(ButtonState::Up))
             {
-                controller.m_startButtonHistory.Clear();
-                controller.m_backButtonHistory.Clear();
+                controller.m_startButtonHistory.clear();
+                controller.m_backButtonHistory.clear();
                 setEnabled(!m_enabled);
             }
 

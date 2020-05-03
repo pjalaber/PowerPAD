@@ -15,6 +15,11 @@ const double Settings::MOUSE_SPEED_MIN = 1.0;
 const double Settings::MOUSE_SPEED_DEFAULT = 5.0;
 const double Settings::MOUSE_SPEED_MAX = 11.0;
 
+const QString Settings::MOUSE_ACCELERATION_KEY = "Mouse/Acceleration";
+const double Settings::MOUSE_ACCELERATION_MIN = 1.0;
+const double Settings::MOUSE_ACCELERATION_DEFAULT = 3.0;
+const double Settings::MOUSE_ACCELERATION_MAX = 6.0;
+
 const QString Settings::LEFT_JOYSTICK_DEADZONE_KEY = "Controller/LeftJoystickDeadZone";
 const QString Settings::RIGHT_JOYSTICK_DEADZONE_KEY = "Controller/RightJoystickDeadZone";
 const quint32 Settings::JOYSTICK_DEADZONE_MIN = 2000;
@@ -24,6 +29,11 @@ const quint32 Settings::JOYSTICK_DEADZONE_MAX = 12000;
 double Settings::mouseSpeedNormalize(double mouseSpeed)
 {
     return qMin(MOUSE_SPEED_MAX, qMax(MOUSE_SPEED_MIN, mouseSpeed));
+}
+
+double Settings::mouseAccelerationNormalize(double mouseAcceleration)
+{
+    return qMin(MOUSE_ACCELERATION_MAX, qMax(MOUSE_ACCELERATION_MIN, mouseAcceleration));
 }
 
 quint32 Settings::joystickNormalize(quint32 joystickSpeed)
@@ -70,6 +80,34 @@ double Settings::mouseSpeedMin()
 double Settings::mouseSpeedMax()
 {
     return MOUSE_SPEED_MAX;
+}
+
+void Settings::setMouseAcceleration(const double &mouseAcceleration)
+{
+    if (m_mouseAcceleration == mouseAcceleration)
+        return;
+    m_mouseAcceleration = mouseAccelerationNormalize(mouseAcceleration);
+    emit mouseAccelerationChanged();
+}
+
+double Settings::mouseAcceleration()
+{
+    return m_mouseAcceleration;
+}
+
+double Settings::mouseAccelerationDefault()
+{
+    return MOUSE_ACCELERATION_DEFAULT;
+}
+
+double Settings::mouseAccelerationMin()
+{
+    return MOUSE_ACCELERATION_MIN;
+}
+
+double Settings::mouseAccelerationMax()
+{
+    return MOUSE_ACCELERATION_MAX;
 }
 
 void Settings::setRunOnStartup(const bool &runOnStartup)
@@ -164,6 +202,7 @@ void Settings::commit()
     m_settings.setValue(PLAY_SOUNDS_ON_DISABLE_KEY, m_playSoundsOnDisable);
     m_settings.setValue(LANGUAGE_KEY, m_language);
     m_settings.setValue(MOUSE_SPEED_KEY, m_mouseSpeed);
+    m_settings.setValue(MOUSE_ACCELERATION_KEY, m_mouseAcceleration);
     m_settings.setValue(LEFT_JOYSTICK_DEADZONE_KEY, m_leftJoystickDeadZone);
     m_settings.setValue(RIGHT_JOYSTICK_DEADZONE_KEY, m_rightJoystickDeadZone);
 }
@@ -174,6 +213,7 @@ void Settings::revert()
     setPlaySoundsOnDisable(m_settings.value(PLAY_SOUNDS_ON_DISABLE_KEY, PLAY_SOUNDS_ON_DISABLE_DEFAULT).toBool());
     setLanguage(m_settings.value(LANGUAGE_KEY, LANGUAGE_STRING_DEFAULT).toString());
     setMouseSpeed(mouseSpeedNormalize(m_settings.value(MOUSE_SPEED_KEY, MOUSE_SPEED_DEFAULT).toDouble()));
+    setMouseAcceleration(mouseAccelerationNormalize(m_settings.value(MOUSE_ACCELERATION_KEY, MOUSE_ACCELERATION_DEFAULT).toDouble()));
     setLeftJoystickDeadZone(joystickNormalize(m_settings.value(LEFT_JOYSTICK_DEADZONE_KEY, JOYSTICK_DEADZONE_DEFAULT).toUInt()));
     setRightJoystickDeadZone(joystickNormalize(m_settings.value(RIGHT_JOYSTICK_DEADZONE_KEY, JOYSTICK_DEADZONE_DEFAULT).toUInt()));
 }
