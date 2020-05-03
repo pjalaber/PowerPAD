@@ -11,14 +11,14 @@ enum class ButtonState
     None
 };
 
-class ButtonHistory
+class ButtonStateTimer
 {
 protected:
     ButtonState m_buttonState;
     QElapsedTimer m_timer;
 
 public:
-    ButtonHistory();
+    ButtonStateTimer();
     bool isStillActive(ButtonState buttonState);
     void startActive(ButtonState buttonState);
     void clear();

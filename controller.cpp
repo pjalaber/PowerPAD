@@ -188,15 +188,15 @@ void ControllerThread::run()
 
             ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
             ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
-            if (start == ButtonState::Up && !controller.m_startButtonHistory.isStillActive(start))
-                controller.m_startButtonHistory.startActive(ButtonState::Up);
-            if (back == ButtonState::Up && !controller.m_backButtonHistory.isStillActive(back))
-                controller.m_backButtonHistory.startActive(ButtonState::Up);
-            if (controller.m_startButtonHistory.isStillActive(ButtonState::Up) &&
-                    controller.m_backButtonHistory.isStillActive(ButtonState::Up))
+            if (start == ButtonState::Up && !controller.m_startButtonStateTimer.isStillActive(start))
+                controller.m_startButtonStateTimer.startActive(ButtonState::Up);
+            if (back == ButtonState::Up && !controller.m_backButtonStateTimer.isStillActive(back))
+                controller.m_backButtonStateTimer.startActive(ButtonState::Up);
+            if (controller.m_startButtonStateTimer.isStillActive(ButtonState::Up) &&
+                    controller.m_backButtonStateTimer.isStillActive(ButtonState::Up))
             {
-                controller.m_startButtonHistory.clear();
-                controller.m_backButtonHistory.clear();
+                controller.m_startButtonStateTimer.clear();
+                controller.m_backButtonStateTimer.clear();
                 setEnabled(!m_enabled);
             }
 

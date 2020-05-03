@@ -20,8 +20,8 @@ public:
     XINPUT_STATE m_state[2];
     bool m_accelerationGraceTimeState;
     QElapsedTimer m_accelerationTimer;
-	ButtonHistory m_startButtonHistory;
-	ButtonHistory m_backButtonHistory;
+    ButtonStateTimer m_startButtonStateTimer;
+    ButtonStateTimer m_backButtonStateTimer;
     MouseAcceleration m_mouseAcceleration;
     Controller();
     bool buttonIsDown(DWORD button, quint32 state) const;

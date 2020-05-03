@@ -1,23 +1,23 @@
 #include "button.h"
 
-ButtonHistory::ButtonHistory() : m_buttonState(ButtonState::None), m_timer()
+ButtonStateTimer::ButtonStateTimer() : m_buttonState(ButtonState::None), m_timer()
 {
 }
 
-bool ButtonHistory::isStillActive(ButtonState buttonState)
+bool ButtonStateTimer::isStillActive(ButtonState buttonState)
 {
     if (m_buttonState != buttonState || !m_timer.isValid())
         return false;
     return (m_timer.elapsed() <= 200);
 }
 
-void ButtonHistory::startActive(ButtonState buttonState)
+void ButtonStateTimer::startActive(ButtonState buttonState)
 {
     m_buttonState = buttonState;
     m_timer.start();
 }
 
-void ButtonHistory::clear()
+void ButtonStateTimer::clear()
 {
     m_buttonState = ButtonState::None;
     m_timer.invalidate();
