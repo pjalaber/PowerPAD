@@ -84,33 +84,51 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
         return;
 
     quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
-
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
+
     int tlx = getNormDeadZone(gamepad.sThumbLX, leftDeadZone);
     int tly = getNormDeadZone(gamepad.sThumbLY, leftDeadZone);
-    if (tlx != 0 || tly != 0)
+
+    POINT p;
+    if ((tlx != 0 || tly != 0) && GetCursorPos(&p))
     {
-        POINT p;
-        if (GetCursorPos(&p))
-        {
-            qint32 accLimit = 0.90 * (INT16_MAX - leftDeadZone);
-            bool accHint = (abs(tlx) >= accLimit || abs(tly) >= accLimit);
-            controller.m_mouseAcceleration.setAccelerationHint(accHint);
-            double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
+        qint32 accLimit = 0.95 * (INT16_MAX - leftDeadZone);
+        bool accHint = (abs(tlx) >= accLimit || abs(tly) >= accLimit);
+        controller.m_mouseAcceleration.setAccelerationHint(accHint);
+        double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
 
-            double step = (SPEED * m_settings->mouseSpeed() * acc / FPS) * delta;
-            double x = (tlx / (double)(INT16_MAX - leftDeadZone)) * step;
-            double y = (tly / (double)(INT16_MAX - leftDeadZone)) * step;
+        double step = (SPEED * m_settings->mouseSpeed() * acc / FPS) * delta;
+        double x = (tlx / (double)(INT16_MAX - leftDeadZone)) * step;
+        double y = (tly / (double)(INT16_MAX - leftDeadZone)) * step;
 
-            p.x += (int)x;
-            p.y -= (int)y;
+        p.x += (int)x;
+        p.y -= (int)y;
 
-            SetCursorPos(p.x, p.y);
-        }
+        SetCursorPos(p.x, p.y);
     }
 }
 
-void ControllerThread::triggerMouseEvent(const Controller& controller)
+void ControllerThread::triggerMouseWheel(Controller &controller)
+{
+    if (!m_enabled)
+        return;
+
+    quint32 rightDeadZone = m_settings->rightJoystickDeadZone();
+    const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
+
+    int tly = getNormDeadZone(gamepad.sThumbRY, rightDeadZone);
+    if ( tly != 0) {
+        quint32 scroll = (tly / (double)(INT16_MAX - rightDeadZone)) * 120;
+
+        INPUT input = {};
+        input.type = INPUT_MOUSE;
+        input.mi.dwFlags = MOUSEEVENTF_WHEEL;
+        input.mi.mouseData = scroll;
+        SendInput(1, &input, sizeof(input));
+    }
+}
+
+void ControllerThread::triggerMouseButton(const Controller& controller)
 {
     if (!m_enabled)
         return;
@@ -128,10 +146,12 @@ void ControllerThread::triggerMouseEvent(const Controller& controller)
     else if (buttonState == ButtonState::Up)
         dwFlags |= MOUSEEVENTF_RIGHTUP;
 
-    INPUT input = {};
-    input.type = INPUT_MOUSE;
-    input.mi.dwFlags = dwFlags;
-    SendInput(1, &input, sizeof(input));
+    if (dwFlags > 0) {
+        INPUT input = {};
+        input.type = INPUT_MOUSE;
+        input.mi.dwFlags = dwFlags;
+        SendInput(1, &input, sizeof(input));
+    }
 }
 
 void ControllerThread::run()
@@ -162,7 +182,8 @@ void ControllerThread::run()
                 qInfo().nospace() << "Controller #" << i << " is disconnected";
             }
 
-            triggerMouseEvent(controller);
+            triggerMouseButton(controller);
+            triggerMouseWheel(controller);
             updateMousePosition(controller, elapsed / FRAME_DURATION);
 
             ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);

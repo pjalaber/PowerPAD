@@ -58,7 +58,8 @@ protected:
 
     static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
     void updateMousePosition(Controller& controller, double delta);
-    void triggerMouseEvent(const Controller& controller);
+    void triggerMouseWheel(Controller &controller);
+    void triggerMouseButton(const Controller& controller);
 
 private:
     void run();
