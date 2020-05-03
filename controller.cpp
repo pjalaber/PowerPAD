@@ -92,14 +92,14 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
     POINT p;
     if ((tlx != 0 || tly != 0) && GetCursorPos(&p))
     {
-        qint32 accLimit = 0.95 * (INT16_MAX - leftDeadZone);
-        bool accHint = (abs(tlx) >= accLimit || abs(tly) >= accLimit);
+        qint32 maxThumb = INT16_MAX - leftDeadZone;
+        bool accHint = (abs(tlx) >= maxThumb || abs(tly) >= maxThumb);
         controller.m_mouseAcceleration.setAccelerationHint(accHint);
         double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
 
         double step = (SPEED * m_settings->mouseSpeed() * acc / FPS) * delta;
-        double x = (tlx / (double)(INT16_MAX - leftDeadZone)) * step;
-        double y = (tly / (double)(INT16_MAX - leftDeadZone)) * step;
+        double x = (tlx / (double)maxThumb) * step;
+        double y = (tly / (double)maxThumb) * step;
 
         p.x += (int)x;
         p.y -= (int)y;
@@ -146,12 +146,10 @@ void ControllerThread::triggerMouseButton(const Controller& controller)
     else if (buttonState == ButtonState::Up)
         dwFlags |= MOUSEEVENTF_RIGHTUP;
 
-    if (dwFlags > 0) {
-        INPUT input = {};
-        input.type = INPUT_MOUSE;
-        input.mi.dwFlags = dwFlags;
-        SendInput(1, &input, sizeof(input));
-    }
+    INPUT input = {};
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = dwFlags;
+    SendInput(1, &input, sizeof(input));
 }
 
 void ControllerThread::run()
