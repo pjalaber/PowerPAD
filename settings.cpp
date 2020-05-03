@@ -12,7 +12,7 @@ const QString Settings::LANGUAGE_STRING_DEFAULT = LANGUAGE_STRING_SYSTEM;
 
 const QString Settings::MOUSE_SPEED_KEY = "Mouse/Speed";
 const double Settings::MOUSE_SPEED_MIN = 1.0;
-const double Settings::MOUSE_SPEED_DEFAULT = 5.0;
+const double Settings::MOUSE_SPEED_DEFAULT = 3.0;
 const double Settings::MOUSE_SPEED_MAX = 11.0;
 
 const QString Settings::MOUSE_ACCELERATION_KEY = "Mouse/Acceleration";
@@ -28,7 +28,7 @@ const double Settings::MOUSE_SCROLL_SPEED_MAX = 11.0;
 const QString Settings::LEFT_JOYSTICK_DEADZONE_KEY = "Controller/LeftJoystickDeadZone";
 const QString Settings::RIGHT_JOYSTICK_DEADZONE_KEY = "Controller/RightJoystickDeadZone";
 const quint32 Settings::JOYSTICK_DEADZONE_MIN = 2000;
-const quint32 Settings::JOYSTICK_DEADZONE_DEFAULT = 4000;
+const quint32 Settings::JOYSTICK_DEADZONE_DEFAULT = 3500;
 const quint32 Settings::JOYSTICK_DEADZONE_MAX = 12000;
 
 double Settings::mouseSpeedNormalize(double mouseSpeed)
