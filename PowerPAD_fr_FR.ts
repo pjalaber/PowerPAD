@@ -27,17 +27,17 @@
 <context>
     <name>Helper</name>
     <message>
-        <location filename="helper.cpp" line="76"/>
+        <location filename="helper.cpp" line="78"/>
         <source>Built on %1</source>
         <translation>Construit le %1</translation>
     </message>
     <message>
-        <location filename="helper.cpp" line="77"/>
+        <location filename="helper.cpp" line="79"/>
         <source>From revision %1</source>
         <translation>Révision %1</translation>
     </message>
     <message>
-        <location filename="helper.cpp" line="78"/>
+        <location filename="helper.cpp" line="80"/>
         <source>Copyright %1</source>
         <translation>Copyright %1</translation>
     </message>
@@ -231,12 +231,12 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="main.qml" line="44"/>
+        <location filename="main.qml" line="52"/>
         <source>Disabled</source>
         <translation>Désactivé</translation>
     </message>
     <message>
-        <location filename="main.qml" line="46"/>
+        <location filename="main.qml" line="54"/>
         <source>Connected</source>
         <translation>Connecté</translation>
     </message>
@@ -246,14 +246,44 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="main.qml" line="56"/>
+        <location filename="main.qml" line="27"/>
+        <source>Controller has been connected</source>
+        <translation>Contrôleur connecté</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="29"/>
+        <source>Controller has been disconnected</source>
+        <translation>Contrôleur déconnecté</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="34"/>
+        <source>PowerPAD has been enabled</source>
+        <translation>PowerPAD activé</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="36"/>
+        <source>PowerPAD has been disabled</source>
+        <translation>PowerPAD désactivé</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="64"/>
         <source>Error: xinput library not found !</source>
         <translation>librarie xinput introuvable</translation>
     </message>
     <message>
-        <location filename="main.qml" line="58"/>
+        <location filename="main.qml" line="66"/>
         <source>Error: xinput symbol not found !</source>
         <translation>symbole xinput introuvable</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="68"/>
+        <source>Error: shell32 library not found !</source>
+        <translation>librairie shell32 introuvable</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="70"/>
+        <source>Error: shell32 symbol not found !</source>
+        <translation>symbole shell32 introuvable</translation>
     </message>
     <message>
         <source>PowerPAD - options</source>
