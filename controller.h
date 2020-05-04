@@ -41,11 +41,17 @@ class ControllerThread: public QThread
     Q_PROPERTY(quint32 connectedCount READ connectedCount NOTIFY connectedCountChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 public:
-    enum Status { StatusOK, StatusXInputLibraryNotFound, StatusXInputSymbolNotFound };
+    enum Status {
+        StatusOK,
+        StatusXInputLibraryNotFound,
+        StatusXInputSymbolNotFound,
+        StatusShell32NotFound,
+        StatusShell32SymbolNotFound
+    };
     Q_ENUM(Status)
 
 private:
-    QLibrary m_lib;
+    QLibrary m_xinputLib, m_shellLib;
 
 protected:
 	Controller m_controller[XUSER_MAX_COUNT];

@@ -6,6 +6,19 @@
 typedef DWORD (WINAPI *XInputGetState_t)(DWORD dwUserIndex, XINPUT_STATE *pState);
 static XInputGetState_t XInputGetStateL;
 
+typedef enum {
+  QUNS_NOT_PRESENT = 1,
+  QUNS_BUSY = 2,
+  QUNS_RUNNING_D3D_FULL_SCREEN = 3,
+  QUNS_PRESENTATION_MODE = 4,
+  QUNS_ACCEPTS_NOTIFICATIONS = 5,
+  QUNS_QUIET_TIME = 6,
+  QUNS_APP = 7
+} QUERY_USER_NOTIFICATION_STATE;
+
+typedef HRESULT (WINAPI *SHQueryUserNotificationState_t)(QUERY_USER_NOTIFICATION_STATE *pquns);
+static SHQueryUserNotificationState_t SHQueryUserNotificationStateL;
+
 Controller::Controller() : m_connected(false),
     m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_accelerationTimer()
 {
@@ -155,15 +168,33 @@ void ControllerThread::triggerMouseButton(const Controller& controller)
 void ControllerThread::run()
 {
     quint32 elapsed = 0;
-    QElapsedTimer fpsTimer;
+    QElapsedTimer fpsTimer, fullscreenCheckTimer;
+    bool fullscreen = false;
 
     qInfo() << "Controller thread started";
+
+    fullscreenCheckTimer.start();
 
     while (!m_shouldStop)
     {
         fpsTimer.restart();
         for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
         {
+            if (fullscreenCheckTimer.elapsed() >= 1000) {
+                QUERY_USER_NOTIFICATION_STATE quns;
+                SHQueryUserNotificationStateL(&quns);
+                bool nowFullscreen = (quns == QUNS_RUNNING_D3D_FULL_SCREEN || quns == QUNS_BUSY);
+                if (!fullscreen && nowFullscreen) {
+                    setEnabled(false);
+                    fullscreen = true;
+                }
+                else if (fullscreen && !nowFullscreen) {
+                    setEnabled(true);
+                    fullscreen = false;
+                }
+                fullscreenCheckTimer.restart();
+            }
+
             Controller& controller = m_controller[i];
 
             bool connected = controller.isConnected();
@@ -216,23 +247,35 @@ void ControllerThread::run()
 
 bool ControllerThread::start()
 {
-    m_lib.setFileName(QStringLiteral("xinput1_4.dll"));
-    if (!m_lib.load()) {
-        m_lib.setFileName(QStringLiteral("xinput1_3.dll"));
-        m_lib.load();
+    m_xinputLib.setFileName(QStringLiteral("xinput1_4.dll"));
+    if (!m_xinputLib.load()) {
+        m_xinputLib.setFileName(QStringLiteral("xinput1_3.dll"));
+        m_xinputLib.load();
     }
 
-    if (!m_lib.isLoaded()) {
+    if (!m_xinputLib.isLoaded()) {
         setStatus(StatusXInputLibraryNotFound);
         return false;
     }
 
-    XInputGetStateL = (XInputGetState_t) m_lib.resolve("XInputGetState");
+    XInputGetStateL = (XInputGetState_t) m_xinputLib.resolve("XInputGetState");
     if (XInputGetStateL == NULL) {
         setStatus(StatusXInputSymbolNotFound);
         return false;
     }
 
+    m_shellLib.setFileName(QStringLiteral("shell32.dll"));
+    if (!m_shellLib.load()) {
+        setStatus(StatusShell32NotFound);
+        return false;
+    }
+
+    SHQueryUserNotificationStateL = (SHQueryUserNotificationState_t)m_shellLib.resolve("SHQueryUserNotificationState");
+    if (SHQueryUserNotificationStateL == NULL)
+    {
+        setStatus(StatusShell32SymbolNotFound);
+        return false;
+    }
 
     m_shouldStop = false;
     QThread::start();

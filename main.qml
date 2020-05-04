@@ -58,6 +58,10 @@ ApplicationWindow {
                     qsTr("Error: xinput library not found !");
                else if (ControllerThread.status == ControllerThread.StatusXInputSymbolNotFound)
                    qsTr("Error: xinput symbol not found !");
+               else if (ControllerThread.status == ControllerThread.StatusShell32NotFound)
+                   qsTr("Error: shell32 library not found !");
+               else if (ControllerThread.status == ControllerThread.StatusShell32SymbolNotFound)
+                   qsTr("Error: shell32 symbol not found !");
                else
                    ""
             }
