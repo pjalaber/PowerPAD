@@ -29,6 +29,12 @@ ApplicationWindow {
                 sysTray.showMessage("PowerPAD", qsTr("Controller has been disconnected"))
             oldConnectedCount = ControllerThread.connectedCount
         }
+        onEnabledChanged: {
+            if (ControllerThread.enabled)
+                sysTray.showMessage("PowerPAD", qsTr("PowerPAD has been enabled"))
+            else
+                sysTray.showMessage("PowerPAD", qsTr("PowerPAD has been disabled"))
+        }
     }
 
     // application window rectangle
