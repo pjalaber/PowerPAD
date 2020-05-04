@@ -4,9 +4,11 @@
 #include <QProcess>
 #include <QScreen>
 #include <QDateTime>
+#include <QDir>
 #include "helper.h"
 
-Helper::Helper(QObject *parent) : QObject(parent)
+Helper::Helper(QObject *parent) : QObject(parent),
+      m_winSystemSoundSettings("HKEY_CURRENT_USER\\AppEvents\\Schemes\\Apps\\.Default", QSettings::NativeFormat)
 {
 }
 
@@ -65,7 +67,7 @@ QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, q
     return QRect(p.rx(), p.ry(), windowWidth, windowHeight);
 }
 
-QString Helper::aboutText()
+QString Helper::getAboutText()
 {
     QDateTime dt;
     dt.setSecsSinceEpoch(QString(APP_BUILD_DATE).toUInt());
@@ -77,3 +79,15 @@ QString Helper::aboutText()
             .arg(tr("From revision %1").arg(APP_BUILD_REVISION))
             .arg(tr("Copyright %1").arg(APP_COPYRIGHT));
 }
+
+QString Helper::getDeviceConnectSoundFilename()
+{
+    return QString("file:///%1").arg(QDir::fromNativeSeparators(m_winSystemSoundSettings.value("DeviceConnect/.Current/.", "").toString()));
+}
+
+
+QString Helper::getDeviceDisconnectSoundFilename()
+{
+    return QString("file:///%1").arg(QDir::fromNativeSeparators(m_winSystemSoundSettings.value("DeviceDisconnect/.Current/.", "").toString()));
+}
+

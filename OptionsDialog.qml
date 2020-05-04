@@ -19,7 +19,7 @@ ApplicationWindow {
 
     OptionsItem {
         id: optionsItem
-        aboutText.text: Helper.aboutText
+        aboutText.text: Helper.getAboutText()
         runOnStartupSwitch {
             checked: Settings.runOnStartup
             onCheckedChanged: Settings.runOnStartup = runOnStartupSwitch.checked

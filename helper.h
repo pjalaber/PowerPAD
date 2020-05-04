@@ -3,11 +3,13 @@
 
 #include <QObject>
 #include <QRect>
+#include <QSettings>
 
 class Helper : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString aboutText READ aboutText NOTIFY aboutTextChanged)
+protected:
+    QSettings m_winSystemSoundSettings;
 public:
     explicit Helper(QObject *parent = nullptr);
     static Helper* instance();
@@ -16,10 +18,10 @@ public:
 
     Q_INVOKABLE QRect computeBestWindowRect(const QString &screenName, const QRect &r,
                                             qint32 windowWidth, qint32 windowHeight);
-    QString aboutText();
+    Q_INVOKABLE QString getAboutText();
+    Q_INVOKABLE QString getDeviceConnectSoundFilename();
+    Q_INVOKABLE QString getDeviceDisconnectSoundFilename();
 
-signals:
-    void aboutTextChanged();
 };
 
 #endif // HELPER_H

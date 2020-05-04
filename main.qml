@@ -5,7 +5,9 @@ import QtQuick.Layouts 1.12
 import Qt.labs.platform 1.1
 import QtLocation 5.14
 import Qt.labs.folderlistmodel 2.12
+import QtMultimedia 5.12
 import com.tekit.powerpad.controllerthread 1.0
+import com.tekit.powerpad.settings 1.0
 import com.tekit.powerpad.helper 1.0
 
 ApplicationWindow {
@@ -22,9 +24,9 @@ ApplicationWindow {
         target: ControllerThread
         onConnectedCountChanged: {
             if (ControllerThread.connectedCount > oldConnectedCount)
-                sysTray.showMessage("PowerPAD", "Controller has been connected")
+                sysTray.showMessage("PowerPAD", qsTr("Controller has been connected"))
             else
-                sysTray.showMessage("PowerPAD", "Controller has been disconnected")
+                sysTray.showMessage("PowerPAD", qsTr("Controller has been disconnected"))
             oldConnectedCount = ControllerThread.connectedCount
         }
     }
@@ -61,10 +63,28 @@ ApplicationWindow {
             }
         }
 
+        SoundEffect {
+            id: deviceConnectSound
+            source: Helper.getDeviceConnectSoundFilename()
+        }
+
+        SoundEffect {
+            id: deviceDisconnectSound
+            source: Helper.getDeviceDisconnectSoundFilename()
+        }
+
         // on/off switch that enables/disables the controller
         switchEnable {
             checked: ControllerThread.enabled
-            onCheckedChanged: ControllerThread.enabled = switchEnable.checked
+            onCheckedChanged: {
+                ControllerThread.enabled = switchEnable.checked
+                if (Settings.playSoundsOnDisable) {
+                    if (ControllerThread.enabled)
+                        deviceConnectSound.play()
+                    else
+                        deviceDisconnectSound.play()
+                }
+            }
         }
 
         // more button that shows context menu when triggered
