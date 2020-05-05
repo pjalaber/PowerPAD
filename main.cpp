@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
                 qDebug().nospace() << "Translator for language " << lang << " successfully installed";
         }
     }
+    QLocale::setDefault(QLocale(lang));
 
     ControllerThread *controllerThread = ControllerThread::instance();
     controllerThread->start();

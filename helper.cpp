@@ -71,11 +71,11 @@ QString Helper::getAboutText()
 {
     QDateTime dt;
     dt.setSecsSinceEpoch(QString(APP_BUILD_DATE).toUInt());
-    QLocale locale = QLocale::system();
+    QLocale locale;
     return QString("<b>%1 %2</b><br><br>%3<br><br>%4<br><br>%5")
             .arg(APP_PRODUCT)
             .arg(APP_VERSION)
-            .arg(tr("Built on %1").arg(dt.toString(locale.dateTimeFormat())))
+            .arg(tr("Built on %1").arg(locale.toString(dt, locale.dateTimeFormat(QLocale::FormatType::ShortFormat))))
             .arg(tr("From revision %1").arg(APP_BUILD_REVISION))
             .arg(tr("Copyright %1").arg(APP_COPYRIGHT));
 }
