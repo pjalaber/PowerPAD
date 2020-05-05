@@ -177,24 +177,24 @@ void ControllerThread::run()
 
     while (!m_shouldStop)
     {
+        if (fullscreenCheckTimer.elapsed() >= 1000) {
+            QUERY_USER_NOTIFICATION_STATE quns;
+            SHQueryUserNotificationStateL(&quns);
+            bool nowFullscreen = (quns == QUNS_RUNNING_D3D_FULL_SCREEN || quns == QUNS_BUSY);
+            if (!fullscreen && nowFullscreen) {
+                setEnabled(false);
+                fullscreen = true;
+            }
+            else if (fullscreen && !nowFullscreen) {
+                setEnabled(true);
+                fullscreen = false;
+            }
+            fullscreenCheckTimer.restart();
+        }
+
         fpsTimer.restart();
         for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
         {
-            if (fullscreenCheckTimer.elapsed() >= 1000) {
-                QUERY_USER_NOTIFICATION_STATE quns;
-                SHQueryUserNotificationStateL(&quns);
-                bool nowFullscreen = (quns == QUNS_RUNNING_D3D_FULL_SCREEN || quns == QUNS_BUSY);
-                if (!fullscreen && nowFullscreen) {
-                    setEnabled(false);
-                    fullscreen = true;
-                }
-                else if (fullscreen && !nowFullscreen) {
-                    setEnabled(true);
-                    fullscreen = false;
-                }
-                fullscreenCheckTimer.restart();
-            }
-
             Controller& controller = m_controller[i];
 
             bool connected = controller.isConnected();
