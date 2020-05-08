@@ -73,7 +73,8 @@ void Controller::saveCurrentState(void)
 
 ControllerThread::ControllerThread() : m_controller(),
     m_shouldStop(false), m_enabled(true),
-    m_connectedCount(0), m_status(StatusOK), m_settings(Settings::instance())
+    m_connectedCount(0), m_status(StatusOK), m_showKeyboard(false),
+    m_settings(Settings::instance()), m_keyboard(Keyboard::instance())
 {
 }
 
@@ -93,7 +94,7 @@ qint32 ControllerThread::getNormDeadZone(SHORT value, SHORT deadZone)
 
 void ControllerThread::updateMousePosition(Controller &controller, double delta)
 {
-    if (!m_enabled)
+    if (!m_enabled || m_showKeyboard)
         return;
 
     quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
@@ -106,7 +107,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
     if ((tlx != 0 || tly != 0) && GetCursorPos(&p))
     {
         qint32 maxThumb = INT16_MAX - leftDeadZone;
-        bool accHint = (abs(tlx) >= maxThumb || abs(tly) >= maxThumb);
+        bool accHint = (abs(tlx) >= 0.97 * maxThumb || abs(tly) >= 0.97 * maxThumb);
         controller.m_mouseAcceleration.setAccelerationHint(accHint);
         double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
 
@@ -123,7 +124,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
 
 void ControllerThread::triggerMouseWheel(Controller &controller)
 {
-    if (!m_enabled)
+    if (!m_enabled || m_showKeyboard)
         return;
 
     quint32 rightDeadZone = m_settings->rightJoystickDeadZone();
@@ -143,7 +144,7 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
 
 void ControllerThread::triggerMouseButton(const Controller& controller)
 {
-    if (!m_enabled)
+    if (!m_enabled || m_showKeyboard)
         return;
 
     DWORD dwFlags = 0;
@@ -163,6 +164,56 @@ void ControllerThread::triggerMouseButton(const Controller& controller)
     input.type = INPUT_MOUSE;
     input.mi.dwFlags = dwFlags;
     SendInput(1, &input, sizeof(input));
+}
+
+void ControllerThread::sendUnicodeKeyDown(quint16 unicodeKey)
+{
+    INPUT input = {};
+    input.type = INPUT_KEYBOARD;
+    input.ki.dwFlags = KEYEVENTF_UNICODE;
+    input.ki.wScan = unicodeKey;
+    SendInput(1, &input, sizeof(input));
+}
+
+void ControllerThread::sendKeyUp()
+{
+    INPUT input = {};
+    input.type = INPUT_KEYBOARD;
+    input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
+    SendInput(1, &input, sizeof(input));
+}
+
+void ControllerThread::manageKeyboard(Controller& controller, double delta)
+{
+    ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_LEFT_THUMB);
+    if (buttonState == ButtonState::Up)
+        setShowKeyboard(!m_showKeyboard);
+
+    if (m_showKeyboard) {
+        quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
+        qint32 maxThumb = INT16_MAX - leftDeadZone;
+        const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
+        int tlx = getNormDeadZone(gamepad.sThumbLX, leftDeadZone);
+        if (tlx != 0) {
+            bool accHint = (abs(tlx) >= maxThumb);
+            controller.m_mouseAcceleration.setAccelerationHint(accHint);
+            double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
+
+            double step = (2 * m_settings->mouseSpeed() * acc / FPS) * delta;
+            double x = (tlx / (double)maxThumb) * step;
+            m_keyboard->incCharacterIndex(x);
+        }
+
+        ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_A);
+        if (buttonState == ButtonState::Down)
+            sendUnicodeKeyDown(m_keyboard->getCharacterAt(m_keyboard->characterIndex()).unicode());
+        else if (buttonState == ButtonState::Up)
+            sendKeyUp();
+
+        buttonState = controller.getButtonState(XINPUT_GAMEPAD_X);
+        //if (buttonState == ButtonState::Down)
+
+    }
 }
 
 void ControllerThread::run()
@@ -214,6 +265,7 @@ void ControllerThread::run()
             triggerMouseButton(controller);
             triggerMouseWheel(controller);
             updateMousePosition(controller, elapsed / FRAME_DURATION);
+            manageKeyboard(controller, elapsed / FRAME_DURATION);
 
             ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
             ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
@@ -330,5 +382,18 @@ void ControllerThread::setStatus(Status status)
     if (m_status != status) {
         m_status = status;
         emit statusChanged();
+    }
+}
+
+bool ControllerThread::showKeyboard()
+{
+    return m_showKeyboard;
+}
+
+void ControllerThread::setShowKeyboard(bool showKeyboard)
+{
+    if (m_showKeyboard != showKeyboard) {
+        m_showKeyboard = showKeyboard;
+        emit showKeyboardChanged();
     }
 }

@@ -16,7 +16,7 @@ void MouseAcceleration::setAccelerationHint(bool hint)
         if (hint) {
             if (!m_timer.isValid())
                 m_timer.start();
-            else if (m_timer.elapsed() >= 300) {
+            else if (m_timer.elapsed() >= 400) {
                 m_timer.invalidate();
                 m_state = MouseAccelerationOn;
             }
@@ -33,7 +33,7 @@ void MouseAcceleration::setAccelerationHint(bool hint)
     case MouseAccelerationGrace:
         if (hint) {
             m_state = MouseAccelerationOn;
-        } else if (m_timer.elapsed() >= 300) {
+        } else if (m_timer.elapsed() >= 200) {
             m_timer.invalidate();
             m_state = MouseAccelerationNone;
         }

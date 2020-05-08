@@ -14,5 +14,6 @@
         <file>images/revert.png</file>
         <file>languages/PowerPAD_fr_FR.qm</file>
         <file>OptionsDialog.qml</file>
+        <file>KeyboardItem.ui.qml</file>
     </qresource>
 </RCC>

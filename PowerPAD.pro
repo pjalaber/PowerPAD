@@ -35,6 +35,7 @@ SOURCES += \
         button.cpp \
         controller.cpp \
         helper.cpp \
+        keyboard.cpp \
         main.cpp \
         mouseacceleration.cpp \
         settings.cpp
@@ -61,6 +62,7 @@ HEADERS += \
     button.h \
     controller.h \
     helper.h \
+    keyboard.h \
     mouseacceleration.h \
     settings.h
 

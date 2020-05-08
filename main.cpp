@@ -11,6 +11,7 @@
 #include "controller.h"
 #include "helper.h"
 #include "settings.h"
+#include "keyboard.h"
 
 int main(int argc, char *argv[])
 {
@@ -63,6 +64,15 @@ int main(int argc, char *argv[])
 
         return Settings::instance();
     });
+
+    qmlRegisterSingletonType<Keyboard>("com.tekit.powerpad.keyboard", 1, 0, "Keyboard",
+                                               [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return Keyboard::instance();
+    });
+
 
     QQuickWindow::setTextRenderType(QQuickWindow::TextRenderType::NativeTextRendering);
 
