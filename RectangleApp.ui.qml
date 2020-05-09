@@ -1,5 +1,5 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.13
+import QtQuick 2.14
+import QtQuick.Controls 2.14
 
 Rectangle {
     id: rectangle
@@ -131,7 +131,7 @@ Rectangle {
 
 /*##^##
 Designer {
-    D{i:5;anchors_height:40;anchors_width:135;anchors_x:58;anchors_y:88}D{i:10;anchors_width:228;anchors_x:14}
+    D{i:5;anchors_height:40;anchors_width:135;anchors_x:58;anchors_y:88}
 }
 ##^##*/
 

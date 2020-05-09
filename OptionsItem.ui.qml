@@ -1,6 +1,6 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.13
-import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 
 Item {
     width: 620
@@ -237,8 +237,7 @@ Item {
 
 /*##^##
 Designer {
-    D{i:2;anchors_width:240}D{i:1;anchors_height:200;anchors_width:200}D{i:19;anchors_x:"-5";anchors_y:0}
-D{i:20;anchors_x:"-5";anchors_y:0}
+    D{i:2;anchors_width:240}D{i:1;anchors_height:200;anchors_width:200}
 }
 ##^##*/
 

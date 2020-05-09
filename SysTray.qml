@@ -1,6 +1,5 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import Qt.labs.platform 1.1
-import QtQml 2.14
 import com.tekit.powerpad.controllerthread 1.0
 import com.tekit.powerpad.helper 1.0
 

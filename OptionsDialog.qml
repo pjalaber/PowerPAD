@@ -1,5 +1,5 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.13
+import QtQuick 2.14
+import QtQuick.Controls 2.14
 import QtQuick.Window 2.14
 import com.tekit.powerpad.settings 1.0
 import com.tekit.powerpad.helper 1.0

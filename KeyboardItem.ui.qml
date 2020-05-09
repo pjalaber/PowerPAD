@@ -1,5 +1,4 @@
-import QtQuick 2.12
-import QtGraphicalEffects 1.12
+import QtQuick 2.14
 
 Item {
     width: 1150

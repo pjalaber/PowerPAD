@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
         return Keyboard::instance();
     });
 
-
     QQuickWindow::setTextRenderType(QQuickWindow::TextRenderType::NativeTextRendering);
 
     QQmlApplicationEngine engine;
