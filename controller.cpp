@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QtMath>
+#include <QApplication>
 #include <windows.h>
 #include "controller.h"
 

@@ -15,5 +15,6 @@
         <file>languages/PowerPAD_fr_FR.qm</file>
         <file>OptionsDialog.qml</file>
         <file>KeyboardItem.ui.qml</file>
+        <file>KeyboardWindow.qml</file>
     </qresource>
 </RCC>

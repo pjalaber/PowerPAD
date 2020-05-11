@@ -8,17 +8,29 @@
 #include <QTranslator>
 #include <QDebug>
 #include <QFile>
+#include <QDateTime>
 #include "controller.h"
 #include "helper.h"
 #include "settings.h"
 #include "keyboard.h"
+
+class MyApplication: public QApplication
+{
+    using QApplication::QApplication;
+
+    bool notify(QObject *object, QEvent *event)
+    {
+        qInfo().nospace() << QDateTime::currentDateTime().time().toString() << " " << object << ": " << event;
+        return QApplication::notify(object, event);
+    }
+};
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQuickStyle::setStyle("Fusion");
 
-    QApplication app(argc, argv);
+    MyApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/images/icon.png"));
 
     QTranslator translator;
