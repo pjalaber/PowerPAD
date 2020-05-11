@@ -74,7 +74,7 @@ void Controller::saveCurrentState(void)
 
 ControllerThread::ControllerThread() : m_controller(),
     m_shouldStop(false), m_enabled(true),
-    m_connectedCount(0), m_status(StatusOK), m_showKeyboard(false),
+    m_connectedCount(0), m_status(StatusOK),
     m_settings(Settings::instance()), m_keyboard(Keyboard::instance())
 {
 }
@@ -95,7 +95,7 @@ qint32 ControllerThread::getNormDeadZone(SHORT value, SHORT deadZone)
 
 void ControllerThread::updateMousePosition(Controller &controller, double delta)
 {
-    if (!m_enabled || m_showKeyboard)
+    if (!m_enabled || m_keyboard->show())
         return;
 
     quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
@@ -125,7 +125,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
 
 void ControllerThread::triggerMouseWheel(Controller &controller)
 {
-    if (!m_enabled || m_showKeyboard)
+    if (!m_enabled || m_keyboard->show())
         return;
 
     quint32 rightDeadZone = m_settings->rightJoystickDeadZone();
@@ -145,7 +145,7 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
 
 void ControllerThread::triggerMouseButton(const Controller& controller)
 {
-    if (!m_enabled || m_showKeyboard)
+    if (!m_enabled || m_keyboard->show())
         return;
 
     DWORD dwFlags = 0;
@@ -188,9 +188,9 @@ void ControllerThread::manageKeyboard(Controller& controller, double delta)
 {
     ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_LEFT_THUMB);
     if (buttonState == ButtonState::Up)
-        setShowKeyboard(!m_showKeyboard);
+        m_keyboard->setShow(!m_keyboard->show());
 
-    if (m_showKeyboard) {
+    if (m_keyboard->show()) {
         quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
         qint32 maxThumb = INT16_MAX - leftDeadZone;
         const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
@@ -383,18 +383,5 @@ void ControllerThread::setStatus(Status status)
     if (m_status != status) {
         m_status = status;
         emit statusChanged();
-    }
-}
-
-bool ControllerThread::showKeyboard()
-{
-    return m_showKeyboard;
-}
-
-void ControllerThread::setShowKeyboard(bool showKeyboard)
-{
-    if (m_showKeyboard != showKeyboard) {
-        m_showKeyboard = showKeyboard;
-        emit showKeyboardChanged();
     }
 }

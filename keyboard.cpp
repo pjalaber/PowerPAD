@@ -3,7 +3,7 @@
 const QString Keyboard::CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 Keyboard::Keyboard(QObject *parent) : QObject(parent),
-    m_characterIndex(0)
+    m_show(false), m_characterIndex(0)
 {
 }
 
@@ -42,4 +42,17 @@ QChar Keyboard::getCharacterAt(qint32 characterIndex)
     if (characterIndex < 0)
         characterIndex += CHARACTERS.length();
     return CHARACTERS[characterIndex];
+}
+
+bool Keyboard::show()
+{
+    return m_show;
+}
+
+void Keyboard::setShow(bool show)
+{
+    if (m_show != show) {
+        m_show = show;
+        emit showChanged();
+    }
 }

@@ -41,7 +41,6 @@ class ControllerThread: public QThread
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(quint32 connectedCount READ connectedCount NOTIFY connectedCountChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(bool showKeyboard READ showKeyboard NOTIFY showKeyboardChanged)
 public:
     enum Status {
         StatusOK,
@@ -62,7 +61,6 @@ protected:
     bool m_enabled;
     quint32 m_connectedCount;
     Status m_status;
-    bool m_showKeyboard;
     Settings *m_settings;
     Keyboard *m_keyboard;
 
@@ -96,13 +94,9 @@ public:
     Status status();
     void setStatus(Status status);
 
-    bool showKeyboard();
-    void setShowKeyboard(bool showKeyboard);
-
 signals:
     void enabledChanged();
     void connectedCountChanged();
     void statusChanged();
-    void showKeyboardChanged();
 };
 

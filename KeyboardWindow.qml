@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import QtQuick.Window 2.14
-import com.tekit.powerpad.controllerthread 1.0
 import com.tekit.powerpad.keyboard 1.0
 
 Window {
@@ -30,10 +29,10 @@ Window {
     }
 
     Connections {
-        target: ControllerThread
-        onShowKeyboardChanged: {
-            console.log("keyboard changed")
-            if (ControllerThread.showKeyboard)
+        target: Keyboard
+        onShowChanged: {
+            console.log("keyboard show changed")
+            if (Keyboard.show)
                 keyboardItem.visible = true
             else
                 keyboardItem.visible = false

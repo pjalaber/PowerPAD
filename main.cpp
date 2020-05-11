@@ -20,7 +20,7 @@ class MyApplication: public QApplication
 
     bool notify(QObject *object, QEvent *event)
     {
-        qInfo().nospace() << QDateTime::currentDateTime().time().toString() << " " << object << ": " << event;
+        //qInfo().nospace() << QDateTime::currentDateTime().time().toString() << " " << object << ": " << event;
         return QApplication::notify(object, event);
     }
 };
