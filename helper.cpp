@@ -8,7 +8,8 @@
 #include "helper.h"
 
 Helper::Helper(QObject *parent) : QObject(parent),
-      m_winSystemSoundSettings("HKEY_CURRENT_USER\\AppEvents\\Schemes\\Apps\\.Default", QSettings::NativeFormat)
+      m_winSystemSoundSettings("HKEY_CURRENT_USER\\AppEvents\\Schemes\\Apps\\.Default", QSettings::NativeFormat),
+      m_foregroundWindow(nullptr)
 {
 }
 
@@ -90,4 +91,16 @@ QString Helper::getDeviceDisconnectSoundFilename()
 {
     return QString("file:///%1").arg(QDir::fromNativeSeparators(m_winSystemSoundSettings.value("DeviceDisconnect/.Current/.", "").toString()));
 }
+
+void Helper::saveForegroundWindow()
+{
+    m_foregroundWindow = GetForegroundWindow();
+}
+
+void Helper::restoreForegroundWindow()
+{
+    if (m_foregroundWindow != nullptr)
+        SetForegroundWindow(m_foregroundWindow);
+}
+
 

@@ -14,27 +14,21 @@
 #include "settings.h"
 #include "keyboard.h"
 
-class MyApplication: public QApplication
-{
-    using QApplication::QApplication;
-
-    bool notify(QObject *object, QEvent *event)
-    {
-        //qInfo().nospace() << QDateTime::currentDateTime().time().toString() << " " << object << ": " << event;
-        return QApplication::notify(object, event);
-    }
-};
-
 int main(int argc, char *argv[])
 {
+    Settings *settings = Settings::instance();
+    Helper *helper = Helper::instance();
+    Keyboard *keyboard = Keyboard::instance();
+    ControllerThread *controllerThread = ControllerThread::instance();
+    controllerThread->start();
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQuickStyle::setStyle("Fusion");
 
-    MyApplication app(argc, argv);
+    QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/images/icon.png"));
 
     QTranslator translator;
-    Settings *settings = Settings::instance();
     QString lang = settings->language();
     if (lang == Settings::LANGUAGE_STRING_SYSTEM)
         lang = QLocale::system().name();
@@ -50,39 +44,38 @@ int main(int argc, char *argv[])
     }
     QLocale::setDefault(QLocale(lang));
 
-    ControllerThread *controllerThread = ControllerThread::instance();
-    controllerThread->start();
+
 
     qmlRegisterSingletonType<ControllerThread>("com.tekit.powerpad.controllerthread", 1, 0, "ControllerThread",
-                                               [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+                                               [controllerThread](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
 
-        return ControllerThread::instance();
+        return controllerThread;
     });
 
     qmlRegisterSingletonType<Helper>("com.tekit.powerpad.helper", 1, 0, "Helper",
-                                               [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+                                               [helper](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
 
-        return Helper::instance();
+        return helper;
     });
 
     qmlRegisterSingletonType<Settings>("com.tekit.powerpad.settings", 1, 0, "Settings",
-                                               [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+                                               [settings](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
 
-        return Settings::instance();
+        return settings;
     });
 
     qmlRegisterSingletonType<Keyboard>("com.tekit.powerpad.keyboard", 1, 0, "Keyboard",
-                                               [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+                                               [keyboard](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
 
-        return Keyboard::instance();
+        return keyboard;
     });
 
     QQuickWindow::setTextRenderType(QQuickWindow::TextRenderType::NativeTextRendering);

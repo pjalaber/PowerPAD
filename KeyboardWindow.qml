@@ -1,9 +1,10 @@
 import QtQuick 2.0
 import QtQuick.Window 2.14
 import com.tekit.powerpad.keyboard 1.0
+import com.tekit.powerpad.helper 1.0
 
 Window {
-    flags: Qt.Tool | Qt.FramelessWindowHint| Qt.WindowStaysOnTopHint | Qt.WindowTransparentForInput
+    flags: Qt.FramelessWindowHint| Qt.WindowStaysOnTopHint | Qt.WindowTransparentForInput | Qt.Popup | Qt.NoDropShadowWindowHint
     minimumWidth: keyboardItem.width
     minimumHeight: keyboardItem.height
     maximumWidth: minimumWidth
@@ -11,10 +12,9 @@ Window {
     x: (screen.width - width) / 2
     y: (screen.height - height) / 2
     color: "transparent"
-    visible: true
+    visible: false
     KeyboardItem {
         id: keyboardItem
-        visible: false
         character0.text: Keyboard.getCharacterAt(Keyboard.characterIndex - 5)
         character1.text: Keyboard.getCharacterAt(Keyboard.characterIndex - 4)
         character2.text: Keyboard.getCharacterAt(Keyboard.characterIndex - 3)
@@ -31,15 +31,13 @@ Window {
     Connections {
         target: Keyboard
         onShowChanged: {
-            console.log("keyboard show changed")
-            if (Keyboard.show)
-                keyboardItem.visible = true
+            if (Keyboard.show) {
+                Helper.saveForegroundWindow()
+                show()
+                Helper.restoreForegroundWindow()
+            }
             else
-                keyboardItem.visible = false
+                hide()
         }
-    }
-
-    Component.onCompleted: {
-        show()
     }
 }
