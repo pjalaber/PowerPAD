@@ -21,7 +21,8 @@ typedef HRESULT (WINAPI *SHQueryUserNotificationState_t)(QUERY_USER_NOTIFICATION
 static SHQueryUserNotificationState_t SHQueryUserNotificationStateL;
 
 Controller::Controller() : m_connected(false),
-    m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_accelerationTimer()
+    m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_accelerationTimer(),
+    m_startBackButtonCombo(ButtonState::Up, 200)
 {
 }
 
@@ -184,8 +185,11 @@ void ControllerThread::sendKeyUp()
     SendInput(1, &input, sizeof(input));
 }
 
-void ControllerThread::manageKeyboard(Controller& controller, double delta)
+void ControllerThread::handleKeyboard(Controller& controller, double delta)
 {
+    if (!m_enabled)
+        return;
+
     ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_LEFT_THUMB);
     if (buttonState == ButtonState::Up)
         m_keyboard->setShow(!m_keyboard->show());
@@ -206,14 +210,31 @@ void ControllerThread::manageKeyboard(Controller& controller, double delta)
         }
 
         ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_A);
-        if (buttonState == ButtonState::Down)
+        if (buttonState == ButtonState::Down || buttonState == ButtonState::StillDown)
             sendUnicodeKeyDown(m_keyboard->getCharacterAt(m_keyboard->characterIndex()).unicode());
         else if (buttonState == ButtonState::Up)
             sendKeyUp();
 
         buttonState = controller.getButtonState(XINPUT_GAMEPAD_X);
-        //if (buttonState == ButtonState::Down)
+        if (buttonState == ButtonState::Down || buttonState == ButtonState::StillDown)
+            sendUnicodeKeyDown(0x8); // backspace
+        else if (buttonState == ButtonState::Up)
+            sendKeyUp();
+    }
+}
 
+void ControllerThread::handleButton(Controller& controller)
+{
+    if (m_keyboard->show())
+        return;
+
+    ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
+    ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
+    controller.m_startBackButtonCombo.updateState(back, start);
+    if (controller.m_startBackButtonCombo.isComboOn())
+    {
+        controller.m_startBackButtonCombo.clear();
+        setEnabled(!m_enabled);
     }
 }
 
@@ -229,11 +250,14 @@ void ControllerThread::run()
 
     while (!m_shouldStop)
     {
+        fpsTimer.restart();
+
         if (fullscreenCheckTimer.elapsed() >= 1000) {
             QUERY_USER_NOTIFICATION_STATE quns;
             SHQueryUserNotificationStateL(&quns);
             bool nowFullscreen = (quns == QUNS_RUNNING_D3D_FULL_SCREEN || quns == QUNS_BUSY);
             if (!fullscreen && nowFullscreen) {
+                m_keyboard->setShow(false);
                 setEnabled(false);
                 fullscreen = true;
             }
@@ -244,7 +268,6 @@ void ControllerThread::run()
             fullscreenCheckTimer.restart();
         }
 
-        fpsTimer.restart();
         for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
         {
             Controller& controller = m_controller[i];
@@ -266,21 +289,8 @@ void ControllerThread::run()
             triggerMouseButton(controller);
             triggerMouseWheel(controller);
             updateMousePosition(controller, elapsed / FRAME_DURATION);
-            manageKeyboard(controller, elapsed / FRAME_DURATION);
-
-            ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
-            ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
-            if (start == ButtonState::Up && !controller.m_startButtonStateTimer.isStillActive(start))
-                controller.m_startButtonStateTimer.startActive(ButtonState::Up);
-            if (back == ButtonState::Up && !controller.m_backButtonStateTimer.isStillActive(back))
-                controller.m_backButtonStateTimer.startActive(ButtonState::Up);
-            if (controller.m_startButtonStateTimer.isStillActive(ButtonState::Up) &&
-                    controller.m_backButtonStateTimer.isStillActive(ButtonState::Up))
-            {
-                controller.m_startButtonStateTimer.clear();
-                controller.m_backButtonStateTimer.clear();
-                setEnabled(!m_enabled);
-            }
+            handleKeyboard(controller, elapsed / FRAME_DURATION);
+            handleButton(controller);
 
             controller.saveCurrentState();
         }

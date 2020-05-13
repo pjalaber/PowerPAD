@@ -21,8 +21,7 @@ public:
     XINPUT_STATE m_state[2];
     bool m_accelerationGraceTimeState;
     QElapsedTimer m_accelerationTimer;
-    ButtonStateTimer m_startButtonStateTimer;
-    ButtonStateTimer m_backButtonStateTimer;
+    ButtonCombo m_startBackButtonCombo;
     MouseAcceleration m_mouseAcceleration;
     Controller();
     bool buttonIsDown(DWORD button, quint32 state) const;
@@ -71,7 +70,8 @@ protected:
     void updateMousePosition(Controller& controller, double delta);
     void triggerMouseWheel(Controller &controller);
     void triggerMouseButton(const Controller& controller);
-    void manageKeyboard(Controller& controller, double delta);
+    void handleKeyboard(Controller& controller, double delta);
+    void handleButton(Controller& controller);
 
 private:
     void run();
