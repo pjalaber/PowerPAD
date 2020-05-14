@@ -16,12 +16,15 @@ class ButtonTimer
 protected:
     ButtonState m_buttonState;
     QElapsedTimer m_timer;
+    quint32 m_expireDelayMsec;
 
 public:
     ButtonTimer();
-    void start(ButtonState buttonState);
+    void start(ButtonState buttonState, quint32 expireDelayMsec);
+    bool isValid();
     void invalidate();
-    bool stateHasChangedOrExpired(ButtonState buttonState, quint32 expireDelayMs);
+    bool hasExpired();
+    bool stateHasChangedOrExpired(ButtonState buttonState);
 };
 
 
@@ -34,8 +37,8 @@ protected:
 
 public:
     ButtonCombo() = delete;
-    ButtonCombo(ButtonState targetState, quint32 pressDelayMs);
-    void updateState(ButtonState button1State, ButtonState button2State);
+    ButtonCombo(ButtonState targetState);
+    void updateState(ButtonState button1State, ButtonState button2State, quint32 pressDelayMsec);
     void clear();
     bool isComboOn();
 };

@@ -7,6 +7,7 @@
 #include <xinput.h>
 #include "mouseacceleration.h"
 #include "button.h"
+#include "winsys.h"
 #include "settings.h"
 #include "keyboard.h"
 
@@ -23,6 +24,7 @@ public:
     QElapsedTimer m_accelerationTimer;
     ButtonCombo m_startBackButtonCombo;
     MouseAcceleration m_mouseAcceleration;
+    ButtonTimer m_repeatTimer;
     Controller();
     bool buttonIsDown(DWORD button, quint32 state) const;
     ButtonState getButtonState(DWORD button) const;
@@ -39,19 +41,6 @@ class ControllerThread: public QThread
     Q_OBJECT
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(quint32 connectedCount READ connectedCount NOTIFY connectedCountChanged)
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-public:
-    enum Status {
-        StatusOK,
-        StatusXInputLibraryNotFound,
-        StatusXInputSymbolNotFound,
-        StatusShell32NotFound,
-        StatusShell32SymbolNotFound
-    };
-    Q_ENUM(Status)
-
-private:
-    QLibrary m_xinputLib, m_shellLib;
 
 protected:
 	Controller m_controller[XUSER_MAX_COUNT];
@@ -59,19 +48,20 @@ protected:
 	bool m_shouldStop;
     bool m_enabled;
     quint32 m_connectedCount;
-    Status m_status;
+    WinSys *m_winsys;
     Settings *m_settings;
     Keyboard *m_keyboard;
 
     static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
-    static void sendUnicodeKeyDown(quint16 unicodeKey);
-    static void sendKeyUp();
+
+    void handleKeyButton(Controller& controller, quint32 button);
 
     void updateMousePosition(Controller& controller, double delta);
     void triggerMouseWheel(Controller &controller);
     void triggerMouseButton(const Controller& controller);
     void handleKeyboard(Controller& controller, double delta);
-    void handleButton(Controller& controller);
+    void handleComboButtons(Controller& controller);
+    void handleDpadButtons(Controller &controller);
 
 private:
     void run();
@@ -82,7 +72,7 @@ public:
     static constexpr double FRAME_DURATION = 1000.0 / FPS;
     ControllerThread();
     static ControllerThread* instance();
-    bool start();
+    void start();
     void stop();
 
     bool enabled();
@@ -91,12 +81,8 @@ public:
     quint32 connectedCount();
     void setConnectedCount(quint32 connectedCount);
 
-    Status status();
-    void setStatus(Status status);
-
 signals:
     void enabledChanged();
     void connectedCountChanged();
-    void statusChanged();
 };
 

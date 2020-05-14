@@ -38,7 +38,8 @@ SOURCES += \
         keyboard.cpp \
         main.cpp \
         mouseacceleration.cpp \
-        settings.cpp
+        settings.cpp \
+        winsys.cpp
 
 RESOURCES += qml.qrc
 
@@ -64,6 +65,7 @@ HEADERS += \
     helper.h \
     keyboard.h \
     mouseacceleration.h \
-    settings.h
+    settings.h \
+    winsys.h
 
 DISTFILES +=

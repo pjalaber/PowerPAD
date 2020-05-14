@@ -1,13 +1,19 @@
 #include "button.h"
 
-ButtonTimer::ButtonTimer(): m_buttonState(ButtonState::None), m_timer()
+ButtonTimer::ButtonTimer(): m_buttonState(ButtonState::None), m_timer(), m_expireDelayMsec(0)
 {
 }
 
-void ButtonTimer::start(ButtonState buttonState)
+void ButtonTimer::start(ButtonState buttonState, quint32 expireDelayMsec)
 {
   m_buttonState = buttonState;
+  m_expireDelayMsec = expireDelayMsec;
   m_timer.start();
+}
+
+bool ButtonTimer::isValid()
+{
+    return m_timer.isValid();
 }
 
 void ButtonTimer::invalidate()
@@ -16,24 +22,28 @@ void ButtonTimer::invalidate()
     m_timer.invalidate();
 }
 
-bool ButtonTimer::stateHasChangedOrExpired(ButtonState buttonState, quint32 expireDelayMs)
+bool ButtonTimer::hasExpired()
 {
-    return (m_buttonState != buttonState || !m_timer.isValid() || m_timer.elapsed() >= expireDelayMs);
+    return m_timer.elapsed() >= m_expireDelayMsec;
 }
 
+bool ButtonTimer::stateHasChangedOrExpired(ButtonState buttonState)
+{
+    return (m_buttonState != buttonState || !isValid() || hasExpired());
+}
 
-ButtonCombo::ButtonCombo(ButtonState targetState, quint32 pressDelayMs) : m_targetState(targetState),
-    m_button1Timer(), m_button2Timer(), m_pressDelayMs(pressDelayMs)
+ButtonCombo::ButtonCombo(ButtonState targetState) : m_targetState(targetState),
+    m_button1Timer(), m_button2Timer()
 {
 }
 
-void ButtonCombo::updateState(ButtonState button1State, ButtonState button2State)
+void ButtonCombo::updateState(ButtonState button1State, ButtonState button2State, quint32 pressDelayMsec)
 {
-    if (button1State == m_targetState && m_button1Timer.stateHasChangedOrExpired(button1State, m_pressDelayMs))
-        m_button1Timer.start(button1State);
+    if (button1State == m_targetState && m_button1Timer.stateHasChangedOrExpired(button1State))
+        m_button1Timer.start(button1State, pressDelayMsec);
 
-    if (button2State == m_targetState && m_button2Timer.stateHasChangedOrExpired(button2State, m_pressDelayMs))
-        m_button2Timer.start(button2State);
+    if (button2State == m_targetState && m_button2Timer.stateHasChangedOrExpired(button2State))
+        m_button2Timer.start(button2State, pressDelayMsec);
 }
 
 void ButtonCombo::clear()
@@ -44,6 +54,7 @@ void ButtonCombo::clear()
 
 bool ButtonCombo::isComboOn()
 {
-    return (!m_button1Timer.stateHasChangedOrExpired(m_targetState, m_pressDelayMs) &&
-            !m_button2Timer.stateHasChangedOrExpired(m_targetState, m_pressDelayMs));
+    return (!m_button1Timer.stateHasChangedOrExpired(m_targetState) &&
+            !m_button2Timer.stateHasChangedOrExpired(m_targetState));
 }
+

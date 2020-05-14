@@ -11,11 +11,13 @@
 #include <QDateTime>
 #include "controller.h"
 #include "helper.h"
+#include "winsys.h"
 #include "settings.h"
 #include "keyboard.h"
 
 int main(int argc, char *argv[])
 {
+    WinSys *winSys = WinSys::instance();
     Settings *settings = Settings::instance();
     Helper *helper = Helper::instance();
     Keyboard *keyboard = Keyboard::instance();
@@ -44,6 +46,14 @@ int main(int argc, char *argv[])
     }
     QLocale::setDefault(QLocale(lang));
 
+
+    qmlRegisterSingletonType<ControllerThread>("com.tekit.powerpad.winsys", 1, 0, "WinSys",
+                                               [winSys](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return winSys;
+    });
 
 
     qmlRegisterSingletonType<ControllerThread>("com.tekit.powerpad.controllerthread", 1, 0, "ControllerThread",

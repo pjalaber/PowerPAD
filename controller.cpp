@@ -1,28 +1,11 @@
 #include <QDebug>
 #include <QtMath>
 #include <QApplication>
-#include <windows.h>
 #include "controller.h"
-
-typedef DWORD (WINAPI *XInputGetState_t)(DWORD dwUserIndex, XINPUT_STATE *pState);
-static XInputGetState_t XInputGetStateL;
-
-typedef enum {
-  QUNS_NOT_PRESENT = 1,
-  QUNS_BUSY = 2,
-  QUNS_RUNNING_D3D_FULL_SCREEN = 3,
-  QUNS_PRESENTATION_MODE = 4,
-  QUNS_ACCEPTS_NOTIFICATIONS = 5,
-  QUNS_QUIET_TIME = 6,
-  QUNS_APP = 7
-} QUERY_USER_NOTIFICATION_STATE;
-
-typedef HRESULT (WINAPI *SHQueryUserNotificationState_t)(QUERY_USER_NOTIFICATION_STATE *pquns);
-static SHQueryUserNotificationState_t SHQueryUserNotificationStateL;
 
 Controller::Controller() : m_connected(false),
     m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_accelerationTimer(),
-    m_startBackButtonCombo(ButtonState::Up, 200)
+    m_startBackButtonCombo(ButtonState::Up)
 {
 }
 
@@ -36,8 +19,8 @@ bool Controller::readCurrentState(quint32 index)
         return false;
     }
 
-    DWORD dwResult = XInputGetStateL(index, &m_state[Controller::CURRENT_STATE]);
-    m_connected = (dwResult == ERROR_SUCCESS);
+    quint32 result = WinSys::XInputGetState(index, &m_state[Controller::CURRENT_STATE]);
+    m_connected = (result == 0);
 
     if (!m_connected)
         m_connectCheckTimer.restart();
@@ -75,7 +58,7 @@ void Controller::saveCurrentState(void)
 
 ControllerThread::ControllerThread() : m_controller(),
     m_shouldStop(false), m_enabled(true),
-    m_connectedCount(0), m_status(StatusOK),
+    m_connectedCount(0), m_winsys(WinSys::instance()),
     m_settings(Settings::instance()), m_keyboard(Keyboard::instance())
 {
 }
@@ -105,8 +88,8 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
     int tlx = getNormDeadZone(gamepad.sThumbLX, leftDeadZone);
     int tly = getNormDeadZone(gamepad.sThumbLY, leftDeadZone);
 
-    POINT p;
-    if ((tlx != 0 || tly != 0) && GetCursorPos(&p))
+    QPoint p;
+    if ((tlx != 0 || tly != 0) && WinSys::getMouseCursorPos(p))
     {
         qint32 maxThumb = INT16_MAX - leftDeadZone;
         bool accHint = (abs(tlx) >= 0.97 * maxThumb || abs(tly) >= 0.97 * maxThumb);
@@ -117,10 +100,10 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
         double x = (tlx / (double)maxThumb) * step;
         double y = (tly / (double)maxThumb) * step;
 
-        p.x += (int)x;
-        p.y -= (int)y;
+        p.rx() += (qint32)x;
+        p.ry() -= (qint32)y;
 
-        SetCursorPos(p.x, p.y);
+        WinSys::setMouseCursorPos(p);
     }
 }
 
@@ -134,13 +117,8 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
 
     int tly = getNormDeadZone(gamepad.sThumbRY, rightDeadZone);
     if ( tly != 0) {
-        quint32 scroll = (tly / (double)(INT16_MAX - rightDeadZone)) * m_settings->mouseScrollSpeed() * 30;
-
-        INPUT input = {};
-        input.type = INPUT_MOUSE;
-        input.mi.dwFlags = MOUSEEVENTF_WHEEL;
-        input.mi.mouseData = scroll;
-        SendInput(1, &input, sizeof(input));
+        qint32 scroll = (tly / (double)(INT16_MAX - rightDeadZone)) * m_settings->mouseScrollSpeed() * 30;
+        WinSys::sendMouseWheel(scroll);
     }
 }
 
@@ -149,40 +127,85 @@ void ControllerThread::triggerMouseButton(const Controller& controller)
     if (!m_enabled || m_keyboard->show())
         return;
 
-    DWORD dwFlags = 0;
+    WinSys::MouseButton leftButton;
     ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_A);
     if (buttonState == ButtonState::Down)
-        dwFlags |= MOUSEEVENTF_LEFTDOWN;
+        leftButton = WinSys::MouseButton::Down;
     else if (buttonState == ButtonState::Up)
-        dwFlags |= MOUSEEVENTF_LEFTUP;
+        leftButton = WinSys::MouseButton::Up;
+    else
+        leftButton = WinSys::MouseButton::None;
 
+    WinSys::MouseButton rightButton;
     buttonState = controller.getButtonState(XINPUT_GAMEPAD_X);
     if (buttonState == ButtonState::Down)
-        dwFlags |= MOUSEEVENTF_RIGHTDOWN;
+        rightButton = WinSys::MouseButton::Down;
     else if (buttonState == ButtonState::Up)
-        dwFlags |= MOUSEEVENTF_RIGHTUP;
+        rightButton = WinSys::MouseButton::Up;
+    else
+        rightButton = WinSys::MouseButton::None;
 
-    INPUT input = {};
-    input.type = INPUT_MOUSE;
-    input.mi.dwFlags = dwFlags;
-    SendInput(1, &input, sizeof(input));
+    WinSys::sendMouseButton(leftButton, rightButton);
 }
 
-void ControllerThread::sendUnicodeKeyDown(quint16 unicodeKey)
+void ControllerThread::handleKeyButton(Controller& controller, quint32 button)
 {
-    INPUT input = {};
-    input.type = INPUT_KEYBOARD;
-    input.ki.dwFlags = KEYEVENTF_UNICODE;
-    input.ki.wScan = unicodeKey;
-    SendInput(1, &input, sizeof(input));
-}
+    quint16 key = 0;
+    bool isVirtual = false;
 
-void ControllerThread::sendKeyUp()
-{
-    INPUT input = {};
-    input.type = INPUT_KEYBOARD;
-    input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
-    SendInput(1, &input, sizeof(input));
+    switch (button) {
+    case XINPUT_GAMEPAD_A:
+        key = m_keyboard->getCharacterAt(m_keyboard->characterIndex()).unicode();
+        isVirtual = false;
+        break;
+    case XINPUT_GAMEPAD_X:
+        key = VK_BACK;
+        isVirtual = true;
+        break;
+    case XINPUT_GAMEPAD_DPAD_LEFT:
+        key = VK_LEFT;
+        isVirtual = true;
+        break;
+    case XINPUT_GAMEPAD_DPAD_RIGHT:
+        key = VK_RIGHT;
+        isVirtual = true;
+        break;
+    case XINPUT_GAMEPAD_DPAD_UP:
+        key = VK_UP;
+        isVirtual = true;
+        break;
+    case XINPUT_GAMEPAD_DPAD_DOWN:
+        key = VK_DOWN;
+        isVirtual = true;
+        break;
+    default:
+        Q_ASSERT(0);
+    }
+
+    ButtonState buttonState = controller.getButtonState(button);
+    switch (buttonState) {
+    case ButtonState::Down:
+        WinSys::sendKeyDown(isVirtual, key);
+        break;
+
+    case ButtonState::StillDown:
+        if (!controller.m_repeatTimer.isValid()) {
+            controller.m_repeatTimer.start(buttonState, 400);
+        }
+        else if (controller.m_repeatTimer.hasExpired()) {
+            controller.m_repeatTimer.start(buttonState, 25);
+            WinSys::sendKeyDown(isVirtual, key);
+        }
+        break;
+
+    case ButtonState::Up:
+        controller.m_repeatTimer.invalidate();
+        WinSys::sendKeyUp(isVirtual);
+        break;
+
+    default:
+        break;
+    }
 }
 
 void ControllerThread::handleKeyboard(Controller& controller, double delta)
@@ -209,32 +232,42 @@ void ControllerThread::handleKeyboard(Controller& controller, double delta)
             m_keyboard->incCharacterIndex(x);
         }
 
-        ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_A);
-        if (buttonState == ButtonState::Down || buttonState == ButtonState::StillDown)
-            sendUnicodeKeyDown(m_keyboard->getCharacterAt(m_keyboard->characterIndex()).unicode());
-        else if (buttonState == ButtonState::Up)
-            sendKeyUp();
-
-        buttonState = controller.getButtonState(XINPUT_GAMEPAD_X);
-        if (buttonState == ButtonState::Down || buttonState == ButtonState::StillDown)
-            sendUnicodeKeyDown(0x8); // backspace
-        else if (buttonState == ButtonState::Up)
-            sendKeyUp();
+        for (quint32 button : {XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_X, XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
+             XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_DPAD_DOWN})
+        {
+            handleKeyButton(controller, button);
+        }
     }
 }
 
-void ControllerThread::handleButton(Controller& controller)
+void ControllerThread::handleComboButtons(Controller& controller)
 {
     if (m_keyboard->show())
         return;
 
+    /* back+start buttons combo
+     */
     ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
     ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
-    controller.m_startBackButtonCombo.updateState(back, start);
+    controller.m_startBackButtonCombo.updateState(back, start, 200);
     if (controller.m_startBackButtonCombo.isComboOn())
     {
         controller.m_startBackButtonCombo.clear();
         setEnabled(!m_enabled);
+    }   
+}
+
+void ControllerThread::handleDpadButtons(Controller &controller)
+{
+    if (!m_enabled)
+        return;
+
+    /* left, right, up, down buttons
+     */
+    for (quint32 button : {XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
+         XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_DPAD_DOWN})
+    {
+        handleKeyButton(controller, button);
     }
 }
 
@@ -253,9 +286,7 @@ void ControllerThread::run()
         fpsTimer.restart();
 
         if (fullscreenCheckTimer.elapsed() >= 1000) {
-            QUERY_USER_NOTIFICATION_STATE quns;
-            SHQueryUserNotificationStateL(&quns);
-            bool nowFullscreen = (quns == QUNS_RUNNING_D3D_FULL_SCREEN || quns == QUNS_BUSY);
+            bool nowFullscreen = WinSys::isFullScreen();
             if (!fullscreen && nowFullscreen) {
                 m_keyboard->setShow(false);
                 setEnabled(false);
@@ -268,7 +299,7 @@ void ControllerThread::run()
             fullscreenCheckTimer.restart();
         }
 
-        for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
+        for (quint32 i = 0; i < XUSER_MAX_COUNT; i++)
         {
             Controller& controller = m_controller[i];
 
@@ -286,11 +317,12 @@ void ControllerThread::run()
                 qInfo().nospace() << "Controller #" << i << " is disconnected";
             }
 
+            handleKeyboard(controller, elapsed / FRAME_DURATION);
+            updateMousePosition(controller, elapsed / FRAME_DURATION);
             triggerMouseButton(controller);
             triggerMouseWheel(controller);
-            updateMousePosition(controller, elapsed / FRAME_DURATION);
-            handleKeyboard(controller, elapsed / FRAME_DURATION);
-            handleButton(controller);
+            handleComboButtons(controller);
+            handleDpadButtons(controller);
 
             controller.saveCurrentState();
         }
@@ -308,41 +340,12 @@ void ControllerThread::run()
     qInfo() << "Controller thread stopped";
 }
 
-bool ControllerThread::start()
+void ControllerThread::start()
 {
-    m_xinputLib.setFileName(QStringLiteral("xinput1_4.dll"));
-    if (!m_xinputLib.load()) {
-        m_xinputLib.setFileName(QStringLiteral("xinput1_3.dll"));
-        m_xinputLib.load();
+    if (m_winsys->status() == WinSys::StatusOK) {
+        m_shouldStop = false;
+        QThread::start();
     }
-
-    if (!m_xinputLib.isLoaded()) {
-        setStatus(StatusXInputLibraryNotFound);
-        return false;
-    }
-
-    XInputGetStateL = (XInputGetState_t) m_xinputLib.resolve("XInputGetState");
-    if (XInputGetStateL == NULL) {
-        setStatus(StatusXInputSymbolNotFound);
-        return false;
-    }
-
-    m_shellLib.setFileName(QStringLiteral("shell32.dll"));
-    if (!m_shellLib.load()) {
-        setStatus(StatusShell32NotFound);
-        return false;
-    }
-
-    SHQueryUserNotificationStateL = (SHQueryUserNotificationState_t)m_shellLib.resolve("SHQueryUserNotificationState");
-    if (SHQueryUserNotificationStateL == NULL)
-    {
-        setStatus(StatusShell32SymbolNotFound);
-        return false;
-    }
-
-    m_shouldStop = false;
-    QThread::start();
-    return true;
 }
 
 void ControllerThread::stop()
@@ -368,7 +371,6 @@ void ControllerThread::setEnabled(bool enabled)
     }
 }
 
-
 quint32 ControllerThread::connectedCount()
 {
     return m_connectedCount;
@@ -380,18 +382,5 @@ void ControllerThread::setConnectedCount(quint32 connectedCount)
     if (m_connectedCount != connectedCount) {
         m_connectedCount = connectedCount;
         emit connectedCountChanged();
-    }
-}
-
-ControllerThread::Status ControllerThread::status()
-{
-    return m_status;
-}
-
-void ControllerThread::setStatus(Status status)
-{
-    if (m_status != status) {
-        m_status = status;
-        emit statusChanged();
     }
 }

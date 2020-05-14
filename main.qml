@@ -2,6 +2,7 @@ import QtQuick 2.14
 import QtQuick.Controls 2.14
 import QtQuick.Window 2.14
 import QtMultimedia 5.14
+import com.tekit.powerpad.winsys 1.0
 import com.tekit.powerpad.controllerthread 1.0
 import com.tekit.powerpad.settings 1.0
 import com.tekit.powerpad.helper 1.0
@@ -54,15 +55,15 @@ ApplicationWindow {
         }
 
         statusErrorText {
-            visible: ControllerThread.status != ControllerThread.StatusOK
+            visible: WinSys.status != WinSys.StatusOK
             text: {
-               if (ControllerThread.status == ControllerThread.StatusXInputLibraryNotFound)
+               if (WinSys.status == WinSys.StatusXInputLibraryNotFound)
                     qsTr("Error: xinput library not found !");
-               else if (ControllerThread.status == ControllerThread.StatusXInputSymbolNotFound)
+               else if (WinSys.status == WinSys.StatusXInputSymbolNotFound)
                    qsTr("Error: xinput symbol not found !");
-               else if (ControllerThread.status == ControllerThread.StatusShell32NotFound)
+               else if (WinSys.status == WinSys.StatusShell32NotFound)
                    qsTr("Error: shell32 library not found !");
-               else if (ControllerThread.status == ControllerThread.StatusShell32SymbolNotFound)
+               else if (WinSys.status == WinSys.StatusShell32SymbolNotFound)
                    qsTr("Error: shell32 symbol not found !");
                else
                    ""
