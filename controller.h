@@ -7,6 +7,7 @@
 #include <xinput.h>
 #include "mouseacceleration.h"
 #include "button.h"
+#include "action.h"
 #include "winsys.h"
 #include "settings.h"
 #include "keyboard.h"
@@ -22,7 +23,7 @@ public:
     XINPUT_STATE m_state[2];
     bool m_accelerationGraceTimeState;
     QElapsedTimer m_accelerationTimer;
-    ButtonCombo m_startBackButtonCombo;
+    ButtonCombo m_enableDisableButtonCombo;
     MouseAcceleration m_mouseAcceleration;
     ButtonTimer m_repeatTimer;
     Controller();
@@ -48,29 +49,30 @@ protected:
 	bool m_shouldStop;
     bool m_enabled;
     quint32 m_connectedCount;
+    Action *m_action;
     WinSys *m_winsys;
     Settings *m_settings;
     Keyboard *m_keyboard;
 
     static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
 
-    void handleKeyButton(Controller& controller, quint32 button);
+    void handleAction(Controller& controller, Action::ControllerButtonAction action);
 
     void updateMousePosition(Controller& controller, double delta);
     void triggerMouseWheel(Controller &controller);
     void triggerMouseButton(const Controller& controller);
     void handleKeyboard(Controller& controller, double delta);
-    void handleComboButtons(Controller& controller);
-    void handleDpadButtons(Controller &controller);
+    void handleButtons(Controller &controller);
+    void handleComboButtons(Controller& controller);    
 
 private:
+    ControllerThread();
     void run();
 
 public:
     static const quint32 FPS = 60;
     static const quint32 SPEED = 180; // * 10 * pixel per second
     static constexpr double FRAME_DURATION = 1000.0 / FPS;
-    ControllerThread();
     static ControllerThread* instance();
     void start();
     void stop();

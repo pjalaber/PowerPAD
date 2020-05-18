@@ -5,7 +5,7 @@
 
 Controller::Controller() : m_connected(false),
     m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_accelerationTimer(),
-    m_startBackButtonCombo(ButtonState::Up)
+    m_enableDisableButtonCombo(ButtonState::Up)
 {
 }
 
@@ -58,7 +58,7 @@ void Controller::saveCurrentState(void)
 
 ControllerThread::ControllerThread() : m_controller(),
     m_shouldStop(false), m_enabled(true),
-    m_connectedCount(0), m_winsys(WinSys::instance()),
+    m_connectedCount(0), m_action(Action::instance()), m_winsys(WinSys::instance()),
     m_settings(Settings::instance()), m_keyboard(Keyboard::instance())
 {
 }
@@ -82,16 +82,26 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
     if (!m_enabled || m_keyboard->show())
         return;
 
-    quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
 
-    int tlx = getNormDeadZone(gamepad.sThumbLX, leftDeadZone);
-    int tly = getNormDeadZone(gamepad.sThumbLY, leftDeadZone);
+    qint32 tlx, tly;
+    quint32 deadZone;
+
+    if (m_action->find(Action::ControllerAnalogAction::MouseMove) == Action::ControllerAnalog::Left) {
+        deadZone = m_settings->leftJoystickDeadZone();
+        tlx = getNormDeadZone(gamepad.sThumbLX, deadZone);
+        tly = getNormDeadZone(gamepad.sThumbLY, deadZone);
+    }
+    else {
+        deadZone = m_settings->rightJoystickDeadZone();
+        tlx = getNormDeadZone(gamepad.sThumbRX, deadZone);
+        tly = getNormDeadZone(gamepad.sThumbRY, deadZone);
+    }
 
     QPoint p;
     if ((tlx != 0 || tly != 0) && WinSys::getMouseCursorPos(p))
     {
-        qint32 maxThumb = INT16_MAX - leftDeadZone;
+        qint32 maxThumb = INT16_MAX - deadZone;
         bool accHint = (abs(tlx) >= 0.97 * maxThumb || abs(tly) >= 0.97 * maxThumb);
         controller.m_mouseAcceleration.setAccelerationHint(accHint);
         double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
@@ -112,12 +122,22 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
     if (!m_enabled || m_keyboard->show())
         return;
 
-    quint32 rightDeadZone = m_settings->rightJoystickDeadZone();
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
 
-    int tly = getNormDeadZone(gamepad.sThumbRY, rightDeadZone);
-    if ( tly != 0) {
-        qint32 scroll = (tly / (double)(INT16_MAX - rightDeadZone)) * m_settings->mouseScrollSpeed() * 30;
+    qint32 tly;
+    quint32 deadZone;
+
+    if (m_action->find(Action::ControllerAnalogAction::MouseWheel) == Action::ControllerAnalog::Left) {
+        deadZone = m_settings->leftJoystickDeadZone();
+        tly = getNormDeadZone(gamepad.sThumbLY, deadZone);
+    }
+    else {
+        deadZone = m_settings->rightJoystickDeadZone();
+        tly = getNormDeadZone(gamepad.sThumbRY, deadZone);
+    }
+
+    if (tly != 0) {
+        qint32 scroll = (tly / (double)(INT16_MAX - deadZone)) * m_settings->mouseScrollSpeed() * 30;
         WinSys::sendMouseWheel(scroll);
     }
 }
@@ -128,7 +148,8 @@ void ControllerThread::triggerMouseButton(const Controller& controller)
         return;
 
     WinSys::MouseButton leftButton;
-    ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_A);
+    quint32 button = Action::getXInputButton(m_action->find(Action::ControllerButtonAction::MouseLeftClick));
+    ButtonState buttonState = controller.getButtonState(button);
     if (buttonState == ButtonState::Down)
         leftButton = WinSys::MouseButton::Down;
     else if (buttonState == ButtonState::Up)
@@ -137,7 +158,8 @@ void ControllerThread::triggerMouseButton(const Controller& controller)
         leftButton = WinSys::MouseButton::None;
 
     WinSys::MouseButton rightButton;
-    buttonState = controller.getButtonState(XINPUT_GAMEPAD_X);
+    button = Action::getXInputButton(m_action->find(Action::ControllerButtonAction::MouseRightClick));
+    buttonState = controller.getButtonState(button);
     if (buttonState == ButtonState::Down)
         rightButton = WinSys::MouseButton::Down;
     else if (buttonState == ButtonState::Up)
@@ -148,41 +170,49 @@ void ControllerThread::triggerMouseButton(const Controller& controller)
     WinSys::sendMouseButton(leftButton, rightButton);
 }
 
-void ControllerThread::handleKeyButton(Controller& controller, quint32 button)
+void ControllerThread::handleAction(Controller& controller, Action::ControllerButtonAction action)
 {
+    Action::ControllerButton button = m_action->find(action);
+    if (button == Action::ControllerButton::None)
+        return;
+
     quint16 key = 0;
     bool isVirtual = false;
 
-    switch (button) {
-    case XINPUT_GAMEPAD_A:
+    switch (action) {
+    case Action::ControllerButtonAction::KeyboardEnterKey:
         key = m_keyboard->getCharacterAt(m_keyboard->characterIndex()).unicode();
         isVirtual = false;
         break;
-    case XINPUT_GAMEPAD_X:
+    case Action::ControllerButtonAction::Backspace:
         key = VK_BACK;
         isVirtual = true;
         break;
-    case XINPUT_GAMEPAD_DPAD_LEFT:
+    case Action::ControllerButtonAction::Left:
         key = VK_LEFT;
         isVirtual = true;
         break;
-    case XINPUT_GAMEPAD_DPAD_RIGHT:
+    case Action::ControllerButtonAction::Right:
         key = VK_RIGHT;
         isVirtual = true;
         break;
-    case XINPUT_GAMEPAD_DPAD_UP:
+    case Action::ControllerButtonAction::Up:
         key = VK_UP;
         isVirtual = true;
         break;
-    case XINPUT_GAMEPAD_DPAD_DOWN:
+    case Action::ControllerButtonAction::Down:
         key = VK_DOWN;
+        isVirtual = true;
+        break;
+    case Action::ControllerButtonAction::Enter:
+        key = VK_RETURN;
         isVirtual = true;
         break;
     default:
         Q_ASSERT(0);
     }
 
-    ButtonState buttonState = controller.getButtonState(button);
+    ButtonState buttonState = controller.getButtonState(Action::getXInputButton(button));
     switch (buttonState) {
     case ButtonState::Down:
         WinSys::sendKeyDown(isVirtual, key);
@@ -213,30 +243,42 @@ void ControllerThread::handleKeyboard(Controller& controller, double delta)
     if (!m_enabled)
         return;
 
-    ButtonState buttonState = controller.getButtonState(XINPUT_GAMEPAD_LEFT_THUMB);
+    quint32 button = Action::getXInputButton(m_action->find(Action::ControllerButtonAction::KeyboardActivate));
+    ButtonState buttonState = controller.getButtonState(button);
     if (buttonState == ButtonState::Up)
         m_keyboard->setShow(!m_keyboard->show());
 
-    if (m_keyboard->show()) {
-        quint32 leftDeadZone = m_settings->leftJoystickDeadZone();
-        qint32 maxThumb = INT16_MAX - leftDeadZone;
-        const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
-        int tlx = getNormDeadZone(gamepad.sThumbLX, leftDeadZone);
-        if (tlx != 0) {
-            bool accHint = (abs(tlx) >= maxThumb);
-            controller.m_mouseAcceleration.setAccelerationHint(accHint);
-            double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
+    if (!m_keyboard->show())
+        return;
 
-            double step = (2 * m_settings->mouseSpeed() * acc / FPS) * delta;
-            double x = (tlx / (double)maxThumb) * step;
-            m_keyboard->incCharacterIndex(x);
-        }
+    const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
 
-        for (quint32 button : {XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_X, XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
-             XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_DPAD_DOWN})
-        {
-            handleKeyButton(controller, button);
-        }
+    quint32 deadZone;
+    qint32 tlx;
+    if (m_action->find(Action::ControllerAnalogAction::KeyboardScroll) == Action::ControllerAnalog::Left) {
+        deadZone = m_settings->leftJoystickDeadZone();
+        tlx = getNormDeadZone(gamepad.sThumbLX, deadZone);
+    }
+    else {
+        deadZone = m_settings->rightJoystickDeadZone();
+        tlx = getNormDeadZone(gamepad.sThumbRX, deadZone);
+    }
+
+    if (tlx != 0) {
+        qint32 maxThumb = INT16_MAX - deadZone;
+        bool accHint = (abs(tlx) >= maxThumb);
+        controller.m_mouseAcceleration.setAccelerationHint(accHint);
+        double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
+        double step = (2 * m_settings->mouseSpeed() * acc / FPS) * delta;
+        double x = (tlx / (double)maxThumb) * step;
+        m_keyboard->incCharacterIndex(x);
+    }
+
+    for (Action::ControllerButtonAction action: {
+         Action::ControllerButtonAction::KeyboardEnterKey,     
+         })
+    {
+        handleAction(controller, action);
     }
 }
 
@@ -245,29 +287,39 @@ void ControllerThread::handleComboButtons(Controller& controller)
     if (m_keyboard->show())
         return;
 
-    /* back+start buttons combo
+    /* enable/disable buttons combo
      */
-    ButtonState back = controller.getButtonState(XINPUT_GAMEPAD_BACK);
-    ButtonState start = controller.getButtonState(XINPUT_GAMEPAD_START);
-    controller.m_startBackButtonCombo.updateState(back, start, 200);
-    if (controller.m_startBackButtonCombo.isComboOn())
-    {
-        controller.m_startBackButtonCombo.clear();
-        setEnabled(!m_enabled);
-    }   
+    const QPair<Action::ControllerButton, Action::ControllerButton> *combo =
+            m_action->find(Action::ControllerComboAction::EnableDisableApp);
+    if (combo != nullptr) {
+        ButtonState button1 = controller.getButtonState(Action::getXInputButton(combo->first));
+        ButtonState button2 = controller.getButtonState(Action::getXInputButton(combo->second));
+        controller.m_enableDisableButtonCombo.updateState(button1, button2, 200);
+        if (controller.m_enableDisableButtonCombo.isComboOn())
+        {
+            controller.m_enableDisableButtonCombo.clear();
+            setEnabled(!m_enabled);
+        }
+    }
 }
 
-void ControllerThread::handleDpadButtons(Controller &controller)
+void ControllerThread::handleButtons(Controller &controller)
 {
     if (!m_enabled)
         return;
 
     /* left, right, up, down buttons
      */
-    for (quint32 button : {XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
-         XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_DPAD_DOWN})
+    for (Action::ControllerButtonAction action: {
+         Action::ControllerButtonAction::Left,
+         Action::ControllerButtonAction::Right,
+         Action::ControllerButtonAction::Up,
+         Action::ControllerButtonAction::Down,
+         Action::ControllerButtonAction::Backspace,
+         Action::ControllerButtonAction::Enter
+         })
     {
-        handleKeyButton(controller, button);
+        handleAction(controller, action);
     }
 }
 
@@ -321,8 +373,8 @@ void ControllerThread::run()
             updateMousePosition(controller, elapsed / FRAME_DURATION);
             triggerMouseButton(controller);
             triggerMouseWheel(controller);
-            handleComboButtons(controller);
-            handleDpadButtons(controller);
+            handleButtons(controller);
+            handleComboButtons(controller);            
 
             controller.saveCurrentState();
         }
