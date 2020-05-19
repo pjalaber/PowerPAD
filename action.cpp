@@ -13,6 +13,7 @@ Action::Action(QObject *parent) : QObject(parent), m_buttonActionHash(), m_analo
     m_buttonActionHash.insert(ControllerButtonAction::Enter, ControllerButton::Start);
     m_buttonActionHash.insert(ControllerButtonAction::KeyboardActivate, ControllerButton::LB);
     m_buttonActionHash.insert(ControllerButtonAction::KeyboardEnterKey, ControllerButton::A);
+    m_buttonActionHash.insert(ControllerButtonAction::MediaPlayPause, ControllerButton::Y);
 
     m_analogActionHash.insert(ControllerAnalogAction::MouseMove, ControllerAnalog::Left);
     m_analogActionHash.insert(ControllerAnalogAction::MouseWheel, ControllerAnalog::Right);

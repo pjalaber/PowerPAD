@@ -14,6 +14,7 @@ public:
         MouseLeftClick, MouseRightClick,
         Left, Right, Up, Down, Backspace, Enter,
         KeyboardActivate, KeyboardEnterKey,
+        MediaPlayPause,
     };
 
     enum class ControllerAnalogAction

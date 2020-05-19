@@ -208,6 +208,10 @@ void ControllerThread::handleAction(Controller& controller, Action::ControllerBu
         key = VK_RETURN;
         isVirtual = true;
         break;
+    case Action::ControllerButtonAction::MediaPlayPause:
+        key = VK_MEDIA_PLAY_PAUSE;
+        isVirtual = true;
+        break;
     default:
         Q_ASSERT(0);
     }
