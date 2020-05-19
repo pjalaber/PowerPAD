@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QFile>
 #include <QDateTime>
+#include <QSystemSemaphore>
+#include <QSharedMemory>
 #include "controller.h"
 #include "helper.h"
 #include "winsys.h"
@@ -17,6 +19,17 @@
 
 int main(int argc, char *argv[])
 {
+    QSystemSemaphore semaphore("PowerPAD_sem", 1);
+    semaphore.acquire();
+    QSharedMemory sharedMemory("PowerPAD_shm");
+    bool isRunning = sharedMemory.attach();
+    if (!isRunning)
+        sharedMemory.create(1);
+    semaphore.release();
+
+    if (isRunning)
+        return 1;
+
     WinSys *winSys = WinSys::instance();
     Settings *settings = Settings::instance();
     Helper *helper = Helper::instance();
