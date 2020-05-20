@@ -16,6 +16,8 @@ DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\" \
            APP_BUILD_DATE=\"\\\"$$system(powershell "(date -UFormat %s).split(',')[0]")\\\"\" \
            APP_BUILD_REVISION=\"\\\"$$system(git rev-parse --short=10 HEAD)\\\"\"
 
+RC_ICONS = images/icon.ico
+
 QT += quick widgets quickcontrols2
 
 CONFIG += c++11
@@ -70,4 +72,9 @@ HEADERS += \
     settings.h \
     winsys.h
 
-DISTFILES +=
+DISTFILES += \
+    images/icon.ico \
+    images/icon.svg \
+    installer/config/config.xml \
+    installer/packages/com.tekit.powerpad/meta/installscript.qs \
+    installer/packages/com.tekit.powerpad/meta/package.xml

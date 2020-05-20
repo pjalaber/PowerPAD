@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Title>PowerPAD</Title>
+    <Name>PowerPAD</Name>
+    <Version>0.1.0</Version>
+    <Publisher>Tekit</Publisher>
+    <StartMenuDir>PowerPAD</StartMenuDir>
+    <TargetDir>@ApplicationsDirX64@/PowerPAD</TargetDir>
+    <Watermark>icon.png</Watermark>
+    <WizardStyle>Modern</WizardStyle>
+</Installer>
