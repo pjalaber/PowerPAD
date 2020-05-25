@@ -16,7 +16,7 @@ void MouseAcceleration::setAccelerationHint(bool hint)
         if (hint) {
             if (!m_timer.isValid())
                 m_timer.start();
-            else if (m_timer.elapsed() >= 400) {
+            else if (m_timer.elapsed() >= 200) {
                 m_timer.invalidate();
                 m_state = MouseAccelerationOn;
             }

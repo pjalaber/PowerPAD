@@ -102,7 +102,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
     if ((tlx != 0 || tly != 0) && WinSys::getMouseCursorPos(p))
     {
         qint32 maxThumb = INT16_MAX - deadZone;
-        bool accHint = (abs(tlx) >= 0.97 * maxThumb || abs(tly) >= 0.97 * maxThumb);
+        bool accHint = (abs(tlx) >= 0.90 * maxThumb || abs(tly) >= 0.90 * maxThumb);
         controller.m_mouseAcceleration.setAccelerationHint(accHint);
         double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
 
