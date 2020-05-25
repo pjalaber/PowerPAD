@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Package>
-    <DisplayName>PowerPAD for Windows desktop</DisplayName>
-    <Description>Install PowerPAD</Description>
+<Package>    
+    <DisplayName>PowerPAD</DisplayName>
+    <Description>Install PowerPAD for Windows desktop</Description>
+
+    <DisplayName xml:lang="fr_FR">PowerPAD</DisplayName>
+    <Description xml:lang="fr">Installation de PowerPAD pour le bureau Windows</Description>
+
     <Version>0.1.0</Version>
     <ReleaseDate>2020-05-20</ReleaseDate>
     <Name>PowerPAD</Name>
@@ -10,4 +14,7 @@
         <License name="GNU general public license" file="gplv3.txt"/>
     </Licenses>
     <Script>installscript.qs</Script>
+    <UserInterfaces>
+        <UserInterface>runprogram.ui</UserInterface>
+    </UserInterfaces>
 </Package>

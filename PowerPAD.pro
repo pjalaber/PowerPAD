@@ -79,6 +79,7 @@ DISTFILES += \
     installer/packages/PowerPAD/meta/gplv3.txt \
     installer/packages/PowerPAD/meta/installscript.qs \
     installer/packages/PowerPAD/meta/package.xml \
+    installer/packages/PowerPAD/meta/runprogram.ui \
     installer/packages/com.tekit.powerpad/meta/installscript.qs \
     installer/packages/com.tekit.powerpad/meta/package.xml
 
