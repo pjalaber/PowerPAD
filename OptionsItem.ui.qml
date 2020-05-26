@@ -194,7 +194,7 @@ Item {
                     y: 8
                     sourceSize.width: 100
                     sourceSize.height: 100
-                    source: "images/icon.png"
+                    source: "images/icon.svg"
                     fillMode: Image.PreserveAspectFit
                 }
             }

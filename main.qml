@@ -37,7 +37,7 @@ ApplicationWindow {
     // application window rectangle
     RectangleApp {
         id: rectangleApp
-        enabled: ControllerThread.status == ControllerThread.StatusOK
+        enabled: ControllerThread.status === ControllerThread.StatusOK
 
         // application window label status that shows:
         // - "Connected" if a controller is connected
@@ -107,7 +107,7 @@ ApplicationWindow {
         // more action associated to more button
         Action {
             id: moreAction
-            icon.source: "images/more.png"
+            icon.source: "images/more.svg"
             onTriggered: {
                 contextMenu.open(rectangleApp.moreButton, contextMenu.exitMenuItem)
             }
@@ -116,7 +116,7 @@ ApplicationWindow {
         // options action associated to options button
         Action {
             id: optionsAction
-            icon.source: "images/options.png"
+            icon.source: "images/options.svg"
             onTriggered: {
                 if (!optionsDialog.visible)
                     applicationWindow.close()

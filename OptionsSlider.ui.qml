@@ -51,7 +51,7 @@ Slider {
         y: 0
         width: 20
         height: 20
-        icon.source: "images/revert.png"
+        icon.source: "images/revert.svg"
         ToolTip.text: qsTr("Default")
         display: AbstractButton.IconOnly
         anchors.verticalCenter: parent.verticalCenter

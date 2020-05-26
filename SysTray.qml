@@ -10,9 +10,9 @@ SystemTrayIcon
     icon.mask: true
     icon.source: {
         if (!ControllerThread.enabled)
-            "images/icon_disabled.png"
+            "images/icon_disabled.svg"
         else
-            "images/icon.png"
+            "images/icon.svg"
     }
 
     menu: contextMenu

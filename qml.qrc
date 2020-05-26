@@ -1,18 +1,18 @@
 <RCC>
     <qresource prefix="/">
+	<file>images/icon.svg</file>
+	<file>images/icon_disabled.svg</file>
+	<file>images/more.svg</file>
+	<file>images/options.svg</file>
+	<file>images/revert.svg</file>
+        <file>OptionsSlider.ui.qml</file>
+        <file>gplv3.txt</file>              
+        <file>languages/PowerPAD_fr_FR.qm</file>
         <file>main.qml</file>
         <file>SysTray.qml</file>
         <file>RectangleApp.ui.qml</file>
         <file>ContextMenu.qml</file>
         <file>OptionsItem.ui.qml</file>
-        <file>images/icon.png</file>
-        <file>images/more.png</file>
-        <file>images/options.png</file>
-        <file>OptionsSlider.ui.qml</file>
-        <file>gplv3.txt</file>
-        <file>images/icon_disabled.png</file>
-        <file>images/revert.png</file>
-        <file>languages/PowerPAD_fr_FR.qm</file>
         <file>OptionsDialog.qml</file>
         <file>KeyboardItem.ui.qml</file>
         <file>KeyboardWindow.qml</file>

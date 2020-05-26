@@ -56,7 +56,7 @@ Rectangle {
         y: 12
         sourceSize.width: 44
         sourceSize.height: 44
-        source: "images/icon.png"
+        source: "images/icon.svg"
         fillMode: Image.PreserveAspectFit
     }
 
@@ -90,7 +90,7 @@ Rectangle {
         x: 1
         y: 172
         width: 248
-        height: 56
+        height: 57
 
         ToolButton {
             id: moreButton

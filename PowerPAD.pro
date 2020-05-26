@@ -72,18 +72,6 @@ HEADERS += \
     settings.h \
     winsys.h
 
-DISTFILES += \
-    images/icon.ico \
-    images/icon.svg \
-    installer/config/config.xml \
-    installer/packages/PowerPAD/meta/gplv3.txt \
-    installer/packages/PowerPAD/meta/installscript.qs \
-    installer/packages/PowerPAD/meta/package.xml \
-    installer/packages/PowerPAD/meta/runprogram.ui \
-    installer/packages/com.tekit.powerpad/meta/installscript.qs \
-    installer/packages/com.tekit.powerpad/meta/package.xml
-
-
 specified_configs=$$find(CONFIG, "\b(debug|release)\b")
 BUILD_SUBDIR=$$last(specified_configs)
 BINARY_CREATOR="c:/Qt/Tools/QtInstallerFramework/3.2/bin/binarycreator.exe"

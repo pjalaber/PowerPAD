@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Fusion");
 
     QApplication app(argc, argv);
-    app.setWindowIcon(QIcon(":/images/icon.png"));
+    app.setWindowIcon(QIcon(":/images/icon.svg"));
 
     QTranslator translator;
     QString lang = settings->language();
