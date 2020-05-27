@@ -53,6 +53,8 @@ Item {
                 id: soundsOnDisableSwitch
                 x: 0
                 y: 88
+                width: 293
+                height: 40
                 text: qsTr("Play sounds on disable")
             }
 
@@ -60,6 +62,8 @@ Item {
                 id: runOnStartupSwitch
                 x: 0
                 y: 42
+                width: 293
+                height: 40
                 text: qsTr("Run on startup")
             }
 

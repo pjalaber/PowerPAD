@@ -7,11 +7,9 @@ import com.tekit.powerpad.helper 1.0
 // options dialog
 ApplicationWindow {
     title: qsTr("PowerPAD - options")
-    flags: Qt.Dialog
-    minimumWidth: optionsItem.width
-    minimumHeight: optionsItem.height
-    maximumWidth: minimumWidth
-    maximumHeight: minimumHeight
+    flags: Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowCloseButtonHint
+    width: optionsItem.width
+    height: optionsItem.height
     property bool needRestart: false
 
     x: (screen.width - width) / 2
