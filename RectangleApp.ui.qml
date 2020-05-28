@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.12
 
 Rectangle {
     id: rectangle
@@ -36,10 +37,10 @@ Rectangle {
 
             Label {
                 id: labelTitle
-                x: parent.x + parent.width + 5
-                y: icon.y + icon.height / 4
+                y: icon.y + icon.height / 5
+                anchors.left: icon.right
+                anchors.leftMargin: 10
                 text: qsTr("PowerPAD")
-                anchors.topMargin: 0
                 font.bold: true
                 font.pointSize: 12
                 color: "white"
@@ -47,8 +48,10 @@ Rectangle {
 
             Label {
                 id: labelStatus
-                x: labelTitle.x
-                y: labelTitle.y + labelTitle.height + 3
+                anchors.left: icon.right
+                anchors.leftMargin: 10
+                anchors.top: labelTitle.bottom
+                anchors.topMargin: 5
                 text: qsTr("Connected")
                 font.italic: true
                 font.pointSize: 10
@@ -61,7 +64,8 @@ Rectangle {
 
     Text {
         id: statusErrorText
-        y: topRectangle.y + topRectangle.height + 10
+        anchors.top: topRectangle.bottom
+        anchors.topMargin: 5
         color: "#e63333"
         text: "Status error"
         anchors.horizontalCenter: parent.horizontalCenter
@@ -70,7 +74,8 @@ Rectangle {
 
     Switch {
         id: switchEnable
-        y: statusErrorText.y + statusErrorText.height + 5
+        anchors.top: statusErrorText.bottom
+        anchors.topMargin: 5
         text: qsTr("Enabled")
         anchors.horizontalCenter: parent.horizontalCenter
         font.bold: false
@@ -82,7 +87,8 @@ Rectangle {
     }
 
     Label {
-        y: switchEnable.y + switchEnable.height
+        anchors.top: switchEnable.bottom
+        anchors.topMargin: 0
         text: qsTr("( Back + Start )")
         anchors.horizontalCenter: parent.horizontalCenter
         font.italic: true
@@ -92,27 +98,28 @@ Rectangle {
     ToolBar {
         id: toolBar
         x: 1
-        y: parent.height * 3.0 / 4
-        height: parent.height / 4 - 1
+        height: parent.height / 4
+        anchors.bottom: parent.bottom
         width: parent.width - 2
-        ToolButton {
-            id: optionsButton
-            x: parent.width * 2.5 / 25
-            width: parent.width * 10.0 / 25
+        RowLayout {
             height: parent.height
-            text: qsTr("Show<br>options")
-            display: AbstractButton.TextBesideIcon
-            font.pointSize: 9
-        }
+            anchors.horizontalCenter: parent.horizontalCenter
+            ToolButton {
+                id: optionsButton
+                height: parent.height
+                text: qsTr("Show<br>options")
+                Layout.fillHeight: true
+                display: AbstractButton.TextBesideIcon
+                font.pointSize: 9
+            }
 
-        ToolButton {
-            id: moreButton
-            x: optionsButton.x + optionsButton.width
-            width: optionsButton.width
-            height: parent.height
-            text: qsTr("More...")
-            autoRepeat: true
-            font.pointSize: 9
+            ToolButton {
+                id: moreButton
+                height: parent.height
+                text: qsTr("More...")
+                Layout.fillHeight: true
+                font.pointSize: 9
+            }
         }
     }
 }
