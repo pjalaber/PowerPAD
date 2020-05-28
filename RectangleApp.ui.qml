@@ -93,7 +93,7 @@ Rectangle {
         id: toolBar
         x: 1
         y: parent.height * 3.0 / 4
-        height: parent.height / 4
+        height: parent.height / 4 - 1
         width: parent.width - 2
         ToolButton {
             id: optionsButton
