@@ -99,21 +99,20 @@ ApplicationWindow {
 
         onAccepted: optionsDialog.accept()
         onRejected: optionsDialog.reject()
-
-        Component.onCompleted: {
-            var request = new XMLHttpRequest()
-            request.onreadystatechange = function() {
-                if (request.readyState === XMLHttpRequest.DONE)
-                    aboutLicenseTextArea.text = request.responseText
-            }
-            request.open("GET", "gplv3.txt")
-            request.send()
-        }
     }
     onActiveChanged: {
         if (active) { // when options dialog becomes active, hide application window
             needRestart = false
             applicationWindow.hideApp()
+            if (optionsItem.aboutLicenseTextArea.text.length === 0) {
+                var request = new XMLHttpRequest()
+                request.onreadystatechange = function() {
+                    if (request.readyState === XMLHttpRequest.DONE)
+                        optionsItem.aboutLicenseTextArea.text = request.responseText
+                }
+                request.open("GET", "gplv3.txt")
+                request.send()
+            }
         }
     }
     onClosing: {

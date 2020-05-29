@@ -162,7 +162,7 @@ Page {
                 TextArea {
                     id: aboutLicenseTextArea
                     wrapMode: Text.WordWrap
-                    placeholderText: qsTr("Text Area")
+                    placeholderText: ""
                 }
             }
         }
