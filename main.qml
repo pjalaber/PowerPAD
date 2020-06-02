@@ -9,10 +9,12 @@ import com.tekit.powerpad.helper 1.0
 
 ApplicationWindow {
     id: applicationWindow
-    flags: Qt.FramelessWindowHint
+    flags: Qt.Window | Qt.FramelessWindowHint
     visible: false
-    width: 250
-    height: 230
+    width: 230
+    height: 200
+    maximumWidth: width
+    maximumHeight: height
 
     // display a popup message on desktop when a controller is connected
     // or disconnected

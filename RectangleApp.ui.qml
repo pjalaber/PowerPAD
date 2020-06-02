@@ -12,8 +12,8 @@ Rectangle {
     property alias statusErrorText: statusErrorText
     anchors.fill: parent
     border.width: 1
-    width: 250
-    height: 230
+    width: 230
+    height: 200
 
     Rectangle {
         id: topRectangle

@@ -9,8 +9,6 @@
 #include <QDebug>
 #include <QFile>
 #include <QDateTime>
-#include <QSystemSemaphore>
-#include <QSharedMemory>
 #include "controller.h"
 #include "helper.h"
 #include "winsys.h"
@@ -19,29 +17,23 @@
 
 int main(int argc, char *argv[])
 {
-    QSystemSemaphore semaphore("PowerPAD_sem", 1);
-    semaphore.acquire();
-    QSharedMemory sharedMemory("PowerPAD_shm");
-    bool isRunning = sharedMemory.attach();
-    if (!isRunning)
-        sharedMemory.create(1);
-    semaphore.release();
-
-    if (isRunning)
+    if (Helper::isAlreadyRunning())
         return 1;
 
     WinSys *winSys = WinSys::instance();
     Settings *settings = Settings::instance();
-    Helper *helper = Helper::instance();
     Keyboard *keyboard = Keyboard::instance();
     ControllerThread *controllerThread = ControllerThread::instance();
     controllerThread->start();
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
     QQuickStyle::setStyle("Fusion");
 
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/images/icon.svg"));
+
+    Helper *helper = Helper::instance();
 
     QTranslator translator;
     QString lang = settings->language();
@@ -101,8 +93,6 @@ int main(int argc, char *argv[])
         return keyboard;
     });
 
-    QQuickWindow::setTextRenderType(QQuickWindow::TextRenderType::NativeTextRendering);
-
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
@@ -114,5 +104,6 @@ int main(int argc, char *argv[])
 
     int ret = app.exec();
     controllerThread->stop();
+    qInfo() << "stop";
     return ret;
 }

@@ -5,12 +5,21 @@
 #include <QScreen>
 #include <QDateTime>
 #include <QDir>
+#include <QSystemSemaphore>
+#include <QSharedMemory>
 #include "helper.h"
 
 Helper::Helper(QObject *parent) : QObject(parent),
       m_winSystemSoundSettings("HKEY_CURRENT_USER\\AppEvents\\Schemes\\Apps\\.Default", QSettings::NativeFormat),
       m_foregroundWindow(nullptr)
 {
+    QList<QScreen *> l = QGuiApplication::screens();
+    for (QList<QScreen *>::const_iterator i = l.constBegin(); i != l.constEnd(); i++)
+    {
+        QScreen *s = *i;
+        qInfo() << s->name();
+        qInfo() << connect(s, &QScreen::logicalDotsPerInchChanged, this, &Helper::logicalDotsPerInchChanged);
+    }
 }
 
 Helper* Helper::instance()
@@ -19,11 +28,32 @@ Helper* Helper::instance()
     return h;
 }
 
+void Helper::logicalDotsPerInchChanged(qreal dpi)
+{
+    Q_UNUSED(dpi);
+    qInfo() << "logical: " << dpi;
+
+}
+
 void Helper::restartApp()
 {
     QCoreApplication *app = QCoreApplication::instance();
     app->quit();
     QProcess::startDetached(app->arguments()[0], app->arguments());
+}
+
+bool Helper::isAlreadyRunning()
+{
+    QSystemSemaphore semaphore("PowerPAD_sem", 1);
+    semaphore.acquire();
+
+    QSharedMemory sharedMemory("PowerPAD_shm");
+    bool isRunning = sharedMemory.attach();
+    if (!isRunning)
+        sharedMemory.create(1);
+    semaphore.release();
+
+    return isRunning;
 }
 
 
@@ -102,5 +132,4 @@ void Helper::restoreForegroundWindow()
     if (m_foregroundWindow != nullptr)
         SetForegroundWindow(m_foregroundWindow);
 }
-
 

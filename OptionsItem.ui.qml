@@ -62,12 +62,14 @@ Page {
             Switch {
                 id: soundsOnDisableSwitch
                 anchors.top: parent.top
+                width: parent.width
                 text: qsTr("Play sounds on disable")
             }
             Switch {
                 id: runOnStartupSwitch
                 anchors.top: soundsOnDisableSwitch.bottom
                 anchors.topMargin: 10
+                width: parent.width
                 text: qsTr("Run on startup")
             }
         }
