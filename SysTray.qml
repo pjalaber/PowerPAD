@@ -5,7 +5,14 @@ import com.tekit.powerpad.helper 1.0
 
 SystemTrayIcon
 {
-    tooltip: qsTr("PowerPAD")
+    tooltip: {
+        if (!ControllerThread.enabled)
+            qsTr("PowerPAD (Disabled)")
+        else if (ControllerThread.connectedCount > 0)
+            qsTr("PowerPAD (Connected)")
+        else
+            qsTr("PowerPAD");
+    }
     visible: true
     icon.mask: true
     icon.source: {
