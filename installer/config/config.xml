@@ -6,6 +6,6 @@
     <Publisher>Tekit</Publisher>
     <StartMenuDir>PowerPAD</StartMenuDir>
     <TargetDir>@ApplicationsDirX64@/PowerPAD</TargetDir>
-    <Watermark>icon.png</Watermark>
+    <Logo>icon.png</Logo>
     <WizardStyle>Modern</WizardStyle>
 </Installer>
