@@ -62,7 +62,8 @@ Page {
             Switch {
                 id: soundsOnDisableSwitch
                 anchors.top: parent.top
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: label.left
                 text: qsTr("Play sounds on disable")
             }
             Switch {

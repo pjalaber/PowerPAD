@@ -104,6 +104,5 @@ int main(int argc, char *argv[])
 
     int ret = app.exec();
     controllerThread->stop();
-    qInfo() << "stop";
     return ret;
 }
