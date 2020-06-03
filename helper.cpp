@@ -69,11 +69,14 @@ QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, q
         }
     }
 
+    if (s == nullptr)
+        return r;
+
     QRect desktop = s->availableGeometry();
     QRect screen = s->geometry();
     QPoint p;
 
-    if (desktop.y() + desktop.height() < screen.y() + screen.height()) { /* taskbar is at the botoom */
+    if (desktop.y() + desktop.height() < screen.y() + screen.height()) { /* taskbar is at the bottom */
         /* try to place new rect horizontally centered above given rect */
         p = QPoint(r.x() + r.width() / 2 - windowWidth / 2, r.y() - windowHeight);
     } else if (desktop.y() > screen.y()) { /* taskbar is on top */

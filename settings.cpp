@@ -1,7 +1,11 @@
 #include <QDebug>
 #include <QDir>
 #include <QCoreApplication>
+#include <QStandardPaths>
 #include "settings.h"
+
+const QString Settings::RUN_ON_STARTUP_LNK_FILENAME = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
+        "/Microsoft/Windows/Start Menu/Programs/Startup/PowerPAD.lnk";
 
 const QString Settings::PLAY_SOUNDS_ON_DISABLE_KEY = "General/PlaySoundsOnDisable";
 const bool Settings::PLAY_SOUNDS_ON_DISABLE_DEFAULT = true;
@@ -52,8 +56,7 @@ quint32 Settings::joystickNormalize(quint32 joystickSpeed)
 }
 
 Settings::Settings(QObject *parent) : QObject(parent),
-    m_settings("Tekit", "PowerPAD"),
-    m_winStartupSettings("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat)
+    m_settings("Tekit", "PowerPAD")
 {
     revert();
 }
@@ -232,10 +235,11 @@ quint32 Settings::joystickDeadZoneMax()
 
 void Settings::commit()
 {
+    qInfo() << QCoreApplication::applicationFilePath() << " " << RUN_ON_STARTUP_LNK_FILENAME;
     if (m_runOnStartup)
-         m_winStartupSettings.setValue(APP_PRODUCT, QDir::toNativeSeparators(QCoreApplication::applicationFilePath()));
+        QFile::link(QCoreApplication::applicationFilePath(), RUN_ON_STARTUP_LNK_FILENAME);
     else
-         m_winStartupSettings.remove(APP_PRODUCT);
+        QFile::remove(RUN_ON_STARTUP_LNK_FILENAME);
 
     m_settings.setValue(PLAY_SOUNDS_ON_DISABLE_KEY, m_playSoundsOnDisable);
     m_settings.setValue(LANGUAGE_KEY, m_language);
@@ -248,7 +252,7 @@ void Settings::commit()
 
 void Settings::revert()
 {
-    setRunOnStartup(!m_winStartupSettings.value(APP_PRODUCT, "").toString().isEmpty());
+    setRunOnStartup(QFile::exists(RUN_ON_STARTUP_LNK_FILENAME));
     setPlaySoundsOnDisable(m_settings.value(PLAY_SOUNDS_ON_DISABLE_KEY, PLAY_SOUNDS_ON_DISABLE_DEFAULT).toBool());
     setLanguage(m_settings.value(LANGUAGE_KEY, LANGUAGE_STRING_DEFAULT).toString());
     setMouseSpeed(mouseSpeedNormalize(m_settings.value(MOUSE_SPEED_KEY, MOUSE_SPEED_DEFAULT).toDouble()));

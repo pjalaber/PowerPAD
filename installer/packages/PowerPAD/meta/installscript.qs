@@ -9,8 +9,14 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
     if (systemInfo.productType === "windows") {
-        component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe", "@DesktopDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@");
-        component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe", "@StartMenuDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@");
+        component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe",
+                               "@DesktopDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@");
+
+        component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe",
+                               "@StartMenuDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@");
+
+        component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe",
+                               "@HomeDir@/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/PowerPAD.lnk", "workingDirectory=@TargetDir@");
     }
 }
 

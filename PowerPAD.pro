@@ -18,7 +18,7 @@ DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\" \
 
 RC_ICONS = images/icon.ico
 
-QT += quick widgets quickcontrols2
+QT += quick widgets quickcontrols2 svg
 
 CONFIG += c++11
 
@@ -86,3 +86,12 @@ installer.commands = \
 
 
 QMAKE_EXTRA_TARGETS += installer
+
+
+DISTFILES += \
+    installer/config/config.xml \
+    installer/config/icon.png \
+    installer/packages/PowerPAD/meta/gplv3.txt \
+    installer/packages/PowerPAD/meta/installscript.qs \
+    installer/packages/PowerPAD/meta/runprogram.ui \
+    installer/packages/PowerPAD/meta/package.xml

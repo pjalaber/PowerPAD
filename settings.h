@@ -17,6 +17,7 @@ class Settings : public QObject
     Q_PROPERTY(quint32 rightJoystickDeadZone READ rightJoystickDeadZone WRITE setRightJoystickDeadZone NOTIFY rightJoystickDeadZoneChanged)
 
 public:
+    static const QString RUN_ON_STARTUP_LNK_FILENAME;
     static const bool RUN_ON_STARTUP_DEFAULT;
 
     static const QString PLAY_SOUNDS_ON_DISABLE_KEY;
@@ -41,7 +42,7 @@ public:
     static const quint32 JOYSTICK_DEADZONE_DEFAULT, JOYSTICK_DEADZONE_MIN, JOYSTICK_DEADZONE_MAX;
 
 private:
-    QSettings m_settings, m_winStartupSettings;
+    QSettings m_settings;
     double m_mouseSpeed;
     double m_mouseAcceleration;
     double m_mouseScrollSpeed;
