@@ -74,7 +74,7 @@ HEADERS += \
 
 specified_configs=$$find(CONFIG, "\b(debug|release)\b")
 BUILD_SUBDIR=$$last(specified_configs)
-BINARY_CREATOR="c:/Qt/Tools/QtInstallerFramework/3.2/bin/binarycreator.exe"
+BINARY_CREATOR=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2/bin/binarycreator.exe
 
 installer.target = installer
 installer.commands = \
