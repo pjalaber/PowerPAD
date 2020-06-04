@@ -7,5 +7,12 @@
     <StartMenuDir>PowerPAD</StartMenuDir>
     <TargetDir>@ApplicationsDirX64@/PowerPAD</TargetDir>
     <Logo>icon.png</Logo>
-    <WizardStyle>Modern</WizardStyle>
+    <WizardStyle>Modern</WizardStyle>   
+    <RemoteRepositories>
+        <Repository>
+            <Url>https://pjalaber.github.io/powerpad</Url>
+            <Enabled>1</Enabled>
+            <DisplayName>PowerPAD repository</DisplayName>
+         </Repository>
+    </RemoteRepositories>
 </Installer>

@@ -8,7 +8,7 @@
 
     <Version>0.1.0</Version>
     <ReleaseDate>2020-05-20</ReleaseDate>
-    <Name>PowerPAD</Name>
+    <Name>com.tekit.powerpad</Name>
     <ForcedInstallation>true</ForcedInstallation>
     <Licenses>
         <License name="GNU general public license" file="gplv3.txt"/>

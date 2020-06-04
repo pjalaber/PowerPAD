@@ -75,14 +75,17 @@ HEADERS += \
 specified_configs=$$find(CONFIG, "\b(debug|release)\b")
 BUILD_SUBDIR=$$last(specified_configs)
 BINARY_CREATOR=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2/bin/binarycreator.exe
+REPOGEN=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2/bin/repogen.exe
 
 installer.target = installer
 installer.commands = \
     (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\")) && \
     md \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" && \
     xcopy \"$${PWD}/installer\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" /E/Y && \
-    copy /Y $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/$${QMAKE_TARGET_PRODUCT}.exe\") $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/PowerPAD/data\") && \
-    \"$${BINARY_CREATOR}\" -v -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" PowerPadInstaller64-$${VERSION}
+    copy /Y $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/$${QMAKE_TARGET_PRODUCT}.exe\") $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/com.tekit.powerpad/data\") && \
+    \"$${BINARY_CREATOR}\" -v -n -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPadInstaller64.exe\" && \
+    (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\")) && \
+    \"$${REPOGEN}\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\"
 
 
 QMAKE_EXTRA_TARGETS += installer
@@ -91,7 +94,7 @@ QMAKE_EXTRA_TARGETS += installer
 DISTFILES += \
     installer/config/config.xml \
     installer/config/icon.png \
-    installer/packages/PowerPAD/meta/gplv3.txt \
-    installer/packages/PowerPAD/meta/installscript.qs \
-    installer/packages/PowerPAD/meta/runprogram.ui \
-    installer/packages/PowerPAD/meta/package.xml
+    installer/packages/com.tekit.powerpad/meta/gplv3.txt \
+    installer/packages/com.tekit.powerpad/meta/installscript.qs \
+    installer/packages/com.tekit.powerpad/meta/runprogram.ui \
+    installer/packages/com.tekit.powerpad/meta/package.xml
