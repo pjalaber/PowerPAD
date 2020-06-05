@@ -1,6 +1,6 @@
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
-VERSION_PATCH = 0
+VERSION_PATCH = 1
 
 VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
 QMAKE_TARGET_COMPANY = "Tekit"
@@ -18,7 +18,7 @@ DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\" \
 
 RC_ICONS = images/icon.ico
 
-QT += quick widgets quickcontrols2 svg
+QT += quick widgets quickcontrols2 svg xml
 
 CONFIG += c++11
 
@@ -42,6 +42,7 @@ SOURCES += \
         main.cpp \
         mouseacceleration.cpp \
         settings.cpp \
+        update.cpp \
         winsys.cpp
 
 RESOURCES += qml.qrc
@@ -70,6 +71,7 @@ HEADERS += \
     keyboard.h \
     mouseacceleration.h \
     settings.h \
+    update.h \
     winsys.h
 
 specified_configs=$$find(CONFIG, "\b(debug|release)\b")

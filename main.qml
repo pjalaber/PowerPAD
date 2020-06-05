@@ -122,6 +122,8 @@ ApplicationWindow {
             onTriggered: {
                 if (!optionsDialog.visible)
                     applicationWindow.close()
+                if (updateDialog.visible)
+                    updateDialog.close()
                 optionsDialog.show()
                 optionsDialog.raise()
                 optionsDialog.requestActivate()
@@ -136,6 +138,10 @@ ApplicationWindow {
     // options dialog
     OptionsDialog {
         id: optionsDialog
+    }
+
+    UpdateDialog {
+        id: updateDialog
     }
 
    KeyboardWindow {

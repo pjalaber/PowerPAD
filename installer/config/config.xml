@@ -2,7 +2,7 @@
 <Installer>
     <Title>PowerPAD</Title>
     <Name>PowerPAD</Name>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Publisher>Tekit</Publisher>
     <StartMenuDir>PowerPAD</StartMenuDir>
     <TargetDir>@ApplicationsDirX64@/PowerPAD</TargetDir>

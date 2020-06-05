@@ -20,7 +20,8 @@ public:
     static bool isAlreadyRunning();
 
     Q_INVOKABLE QRect computeBestWindowRect(const QString &screenName, const QRect &r,
-                                            qint32 windowWidth, qint32 windowHeight);
+                                            qint32 windowWidth, qint32 windowHeight,
+                                            qint32 hMargin = 0, qint32 vMargin = 0);
     Q_INVOKABLE QString getAboutText();
     Q_INVOKABLE QString getDeviceConnectSoundFilename();
     Q_INVOKABLE QString getDeviceDisconnectSoundFilename();

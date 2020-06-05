@@ -14,6 +14,7 @@
 #include "winsys.h"
 #include "settings.h"
 #include "keyboard.h"
+#include "update.h"
 
 int main(int argc, char *argv[])
 {
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon(":/images/icon.svg"));
 
     Helper *helper = Helper::instance();
+    Update *update = Update::instance();
 
     QTranslator translator;
     QString lang = settings->language();
@@ -91,6 +93,14 @@ int main(int argc, char *argv[])
         Q_UNUSED(scriptEngine)
 
         return keyboard;
+    });
+
+    qmlRegisterSingletonType<Keyboard>("com.tekit.powerpad.update", 1, 0, "Update",
+                                               [update](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return update;
     });
 
     QQmlApplicationEngine engine;

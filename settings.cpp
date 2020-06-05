@@ -4,8 +4,7 @@
 #include <QStandardPaths>
 #include "settings.h"
 
-const QString Settings::RUN_ON_STARTUP_LNK_FILENAME = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
-        "/Microsoft/Windows/Start Menu/Programs/Startup/PowerPAD.lnk";
+const QString Settings::RUN_ON_STARTUP_LNK_FILENAME = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + "/Startup/PowerPAD.lnk";
 
 const QString Settings::PLAY_SOUNDS_ON_DISABLE_KEY = "General/PlaySoundsOnDisable";
 const bool Settings::PLAY_SOUNDS_ON_DISABLE_DEFAULT = true;
@@ -235,7 +234,6 @@ quint32 Settings::joystickDeadZoneMax()
 
 void Settings::commit()
 {
-    qInfo() << QCoreApplication::applicationFilePath() << " " << RUN_ON_STARTUP_LNK_FILENAME;
     if (m_runOnStartup)
         QFile::link(QCoreApplication::applicationFilePath(), RUN_ON_STARTUP_LNK_FILENAME);
     else

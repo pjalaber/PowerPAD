@@ -19,9 +19,20 @@ Menu {
 
     MenuItem {
         text: qsTr("Check for updates")
+        onTriggered: {
+            if (!updateDialog.visible)
+                applicationWindow.close()
+            if (optionsDialog.visible)
+                optionsDialog.close()
+
+            updateDialog.startCheckUpdate()
+            updateDialog.show()
+            updateDialog.raise()
+            updateDialog.requestActivate()
+        }
     }
 
-    MenuSeparator{
+    MenuSeparator {
     }
 
     MenuItem {
@@ -34,4 +45,5 @@ Menu {
         text: qsTr("Exit")
         onTriggered: Qt.quit()
     }
+
 }

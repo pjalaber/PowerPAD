@@ -57,7 +57,8 @@ bool Helper::isAlreadyRunning()
 }
 
 
-QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, qint32 windowWidth, qint32 windowHeight)
+QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r,
+                                    qint32 windowWidth, qint32 windowHeight, qint32 hMargin, qint32 vMargin)
 {
     QList<QScreen *> l = QGuiApplication::screens();
     QScreen *s = nullptr;
@@ -90,13 +91,13 @@ QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r, q
         p = QPoint(r.x() - r.width(), r.y() + r.height() / 2 - windowHeight / 2);
     }
     if (p.rx() + windowWidth > desktop.x() + desktop.width())
-        p.rx() = desktop.x() + desktop.width() - windowWidth;
+        p.rx() = desktop.x() + desktop.width() - windowWidth - hMargin;
     if (p.ry() + windowHeight > desktop.y() + desktop.height())
-        p.ry() = desktop.y() + desktop.height() - windowHeight;
+        p.ry() = desktop.y() + desktop.height() - windowHeight - vMargin;
     if (p.rx() < desktop.x())
-        p.rx() = desktop.x();
+        p.rx() = desktop.x() + hMargin;
     if (p.ry() < desktop.y())
-        p.ry() = desktop.y();
+        p.ry() = desktop.y() + vMargin;
 
     return QRect(p.rx(), p.ry(), windowWidth, windowHeight);
 }

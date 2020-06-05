@@ -6,8 +6,8 @@
     <DisplayName xml:lang="fr_FR">PowerPAD</DisplayName>
     <Description xml:lang="fr">Installation de PowerPAD pour le bureau Windows</Description>
 
-    <Version>0.1.0</Version>
-    <ReleaseDate>2020-05-20</ReleaseDate>
+    <Version>0.1.1</Version>
+    <ReleaseDate>2020-06-05</ReleaseDate>
     <Name>com.tekit.powerpad</Name>
     <ForcedInstallation>true</ForcedInstallation>
     <Licenses>
