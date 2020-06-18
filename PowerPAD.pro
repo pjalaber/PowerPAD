@@ -1,6 +1,6 @@
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
-VERSION_PATCH = 1
+VERSION_PATCH = 0
 
 VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
 QMAKE_TARGET_COMPANY = "Tekit"
@@ -98,11 +98,10 @@ installer.commands = \
     ForEach { \
         (Get-Content $${DOLLAR}$${DOLLAR}_).Replace(\'|APP_CHANGELOG|\', \'$${CHANGELOG}\').Replace(\'|APP_VERSION|\', \'$${VERSION}\').Replace(\'|RELEASE_DATE|\', (Date -Format \'yyyy-MM-dd\')) | \
         Set-Content $${DOLLAR}$${DOLLAR}_ \
-    }\" && \
-    (PowerShell -Command \"Remove-Item \'$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPADSetup64.exe\' -ErrorAction SilentlyContinue\" || echo) && \
-    \"$${BINARY_CREATOR}\" -v -e com.tekit.powerpad -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPADSetup64\" && \
+    }\" && \        
     (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\")) && \
-    \"$${REPOGEN}\" -v -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\"
+    \"$${REPOGEN}\" -v -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" && \
+    \"$${BINARY_CREATOR}\" -v -e com.tekit.powerpad -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo/PowerPADSetup64\"
 
 lupdate.target = lupdate
 lupdate.commands = \
