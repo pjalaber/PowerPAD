@@ -78,7 +78,13 @@ specified_configs=$$find(CONFIG, "\b(debug|release)\b")
 BUILD_SUBDIR=$$last(specified_configs)
 BINARY_CREATOR=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2.3/bin/binarycreator.exe
 REPOGEN=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2.3/bin/repogen.exe
+LUPDATE=$$[QT_INSTALL_BINS]/lupdate.exe
+LRELEASE=$$[QT_INSTALL_BINS]/lrelease.exe
 DOLLAR = $
+CHANGELOG=$$cat(changelog.html)
+CHANGELOG=$$replace(CHANGELOG, "<", "&lt;")
+CHANGELOG=$$replace(CHANGELOG, "<", "&gt;")
+CHANGELOG=$$replace(CHANGELOG, "\"", "\\\"")
 
 installer.target = installer
 installer.commands = \
@@ -86,9 +92,11 @@ installer.commands = \
     md \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" && \
     xcopy \"$${PWD}/installer\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" /E/Y && \
     copy /Y $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/$${QMAKE_TARGET_PRODUCT}.exe\") $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/com.tekit.powerpad/data\") && \
+    (PowerShell -Command \"Remove-Item \'$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/*.ts\' \") && \
+    (PowerShell -Command \"Remove-Item \'$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/com.tekit.powerpad/meta/*.ts\' \") && \
     PowerShell -Command \"Get-ChildItem \'$${OUT_PWD}/$${BUILD_SUBDIR}/installer\' -Recurse -File -Include *.xml | \
     ForEach { \
-        (Get-Content $${DOLLAR}$${DOLLAR}_).Replace(\'APP_VERSION\', \'$${VERSION}\').Replace(\'RELEASE_DATE\', (Date -Format \'yyyy-MM-dd\')) | \
+        (Get-Content $${DOLLAR}$${DOLLAR}_).Replace(\'|APP_CHANGELOG|\', \'$${CHANGELOG}\').Replace(\'|APP_VERSION|\', \'$${VERSION}\').Replace(\'|RELEASE_DATE|\', (Date -Format \'yyyy-MM-dd\')) | \
         Set-Content $${DOLLAR}$${DOLLAR}_ \
     }\" && \
     (PowerShell -Command \"Remove-Item \'$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPADSetup64.exe\' -ErrorAction SilentlyContinue\" || echo) && \
@@ -96,12 +104,27 @@ installer.commands = \
     (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\")) && \
     \"$${REPOGEN}\" -v -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\"
 
-QMAKE_EXTRA_TARGETS += installer
+lupdate.target = lupdate
+lupdate.commands = \
+$${LUPDATE} -no-recursive \"$${PWD}\" -ts \"$${PWD}/PowerPAD_fr_FR.ts\" && \
+$${LUPDATE} -no-recursive \"$${PWD}/installer/packages/com.tekit.powerpad/meta\" -ts \"$${PWD}/installer/packages/com.tekit.powerpad/meta/fr.ts\" && \
+$${LUPDATE} -no-recursive \"$${PWD}/installer/config\" -ts \"$${PWD}/installer/config/fr.ts\"
+
+lrelease.target = lrelease
+lrelease.commands = \
+$${LRELEASE} \"$${PWD}/PowerPAD_fr_FR.ts\" -qm \"$${PWD}/languages/PowerPAD_fr_FR.qm\" && \
+$${LRELEASE} \"$${PWD}/installer/packages/com.tekit.powerpad/meta/fr.ts\" -qm \"$${PWD}/installer/packages/com.tekit.powerpad/meta/fr.qm\" && \
+$${LRELEASE} \"$${PWD}/installer/config/fr.ts\" -qm \"$${PWD}/installer/config/fr.qm\"
+
+QMAKE_EXTRA_TARGETS += installer lupdate lrelease
 
 DISTFILES += \
+    changelog.html \
     installer/config/config.xml \
     installer/config/controller.qs \
+    installer/config/fr.ts \
     installer/config/icon.png \
+    installer/packages/com.tekit.powerpad/meta/fr.ts \
     installer/packages/com.tekit.powerpad/meta/gplv3.txt \
     installer/packages/com.tekit.powerpad/meta/installscript.qs \
     installer/packages/com.tekit.powerpad/meta/runprogram.ui \

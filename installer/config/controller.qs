@@ -27,6 +27,6 @@ Controller.prototype.ComponentSelectionPageCallback = function()
     if (widget != null) {
         widget.findChild("ComponentSizeLabel").visible = false;
         widget.subTitle = " ";
-        widget.title = "PowerPAD software update";
+        widget.title = qsTr("PowerPAD software update");
     }
 }
