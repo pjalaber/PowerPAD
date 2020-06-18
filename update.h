@@ -8,12 +8,13 @@ class Update : public QObject
 {
     Q_OBJECT
 private:
-    QProcess m_process;
+    QProcess m_checkUpdateProcess, m_updateProcess;
     QString m_availableVersion;
 public:
     explicit Update(QObject *parent = nullptr);
     static Update* instance();
     Q_INVOKABLE void startCheckUpdate(void);
+    Q_INVOKABLE void startUpdate(void);
 
 signals:
     void checkUpdateStarted();

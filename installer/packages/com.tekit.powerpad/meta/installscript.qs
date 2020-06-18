@@ -1,8 +1,13 @@
 function Component()
 {
-    installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
-    installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
-    installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
+    if (installer.isUpdater()) {
+        installer.setDefaultPageVisible(QInstaller.ReadyForInstallation, false)
+    }
+    else if (installer.isInstaller()) {
+        installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
+        installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
+        installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
+    }
 }
 
 Component.prototype.createOperations = function()

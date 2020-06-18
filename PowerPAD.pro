@@ -76,8 +76,9 @@ HEADERS += \
 
 specified_configs=$$find(CONFIG, "\b(debug|release)\b")
 BUILD_SUBDIR=$$last(specified_configs)
-BINARY_CREATOR=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2/bin/binarycreator.exe
-REPOGEN=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2/bin/repogen.exe
+BINARY_CREATOR=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2.3/bin/binarycreator.exe
+REPOGEN=$$[QT_INSTALL_PREFIX]/../../Tools/QtInstallerFramework/3.2.3/bin/repogen.exe
+DOLLAR = $
 
 installer.target = installer
 installer.commands = \
@@ -85,16 +86,21 @@ installer.commands = \
     md \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" && \
     xcopy \"$${PWD}/installer\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" /E/Y && \
     copy /Y $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/$${QMAKE_TARGET_PRODUCT}.exe\") $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/com.tekit.powerpad/data\") && \
-    \"$${BINARY_CREATOR}\" -v -n -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPadInstaller64.exe\" && \
+    PowerShell -Command \"Get-ChildItem \'$${OUT_PWD}/$${BUILD_SUBDIR}/installer\' -Recurse -File -Include *.xml | \
+    ForEach { \
+        (Get-Content $${DOLLAR}$${DOLLAR}_).Replace(\'APP_VERSION\', \'$${VERSION}\').Replace(\'RELEASE_DATE\', (Date -Format \'yyyy-MM-dd\')) | \
+        Set-Content $${DOLLAR}$${DOLLAR}_ \
+    }\" && \
+    (PowerShell -Command \"Remove-Item \'$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPADSetup64.exe\' -ErrorAction SilentlyContinue\" || echo) && \
+    \"$${BINARY_CREATOR}\" -v -e com.tekit.powerpad -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPADSetup64\" && \
     (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\")) && \
-    \"$${REPOGEN}\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\"
-
+    \"$${REPOGEN}\" -v -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\"
 
 QMAKE_EXTRA_TARGETS += installer
 
-
 DISTFILES += \
     installer/config/config.xml \
+    installer/config/controller.qs \
     installer/config/icon.png \
     installer/packages/com.tekit.powerpad/meta/gplv3.txt \
     installer/packages/com.tekit.powerpad/meta/installscript.qs \

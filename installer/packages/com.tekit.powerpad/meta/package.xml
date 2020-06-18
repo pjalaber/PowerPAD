@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>    
     <DisplayName>PowerPAD</DisplayName>
-    <Description>Install PowerPAD for Windows desktop</Description>
-
-    <DisplayName xml:lang="fr_FR">PowerPAD</DisplayName>
-    <Description xml:lang="fr">Installation de PowerPAD pour le bureau Windows</Description>
-
-    <Version>0.1.1</Version>
-    <ReleaseDate>2020-06-05</ReleaseDate>
+<Description>
+&lt;p style="font-size:xx-large; color:#7f91ad; margin-top:0px; margin-bottom:0px"&gt;What's New in Version APP_VERSION&lt;/p&gt;
+&lt;p style="font-size:x-large; margin-top:0px; margin-bottom:0px"&gt;What's New&lt;/p&gt;
+&lt;p style="font-size:large; margin-top:0px; margin-bottom:0px"&gt;
+- New super feature 1&lt;br&gt;
+- New super feature 2&lt;br&gt;
+&lt;/p&gt;
+&lt;p style="font-size:x-large; margin-top:0px; margin-bottom:0px"&gt;Bug Fixes&lt;/p&gt;
+&lt;p style="font-size:large; margin-top:0px; margin-bottom:0px"&gt;
+- Fix a bug that crashes the application&lt;br&gt;
+&lt;/p&gt;
+</Description>
+<Description xml:lang="fr">
+Installation de PowerPAD pour le bureau Windows
+</Description>
+    <Version>APP_VERSION</Version>
+    <ReleaseDate>RELEASE_DATE</ReleaseDate>
     <Name>com.tekit.powerpad</Name>
     <ForcedInstallation>true</ForcedInstallation>
     <Licenses>

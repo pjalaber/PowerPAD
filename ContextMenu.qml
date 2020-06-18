@@ -1,6 +1,7 @@
 import QtQuick 2.14
 import Qt.labs.platform 1.1
 import com.tekit.powerpad.helper 1.0
+import com.tekit.powerpad.update 1.0
 
 Menu {
     property alias showMenuItem: showMenuItem
@@ -20,15 +21,7 @@ Menu {
     MenuItem {
         text: qsTr("Check for updates")
         onTriggered: {
-            if (!updateDialog.visible)
-                applicationWindow.close()
-            if (optionsDialog.visible)
-                optionsDialog.close()
-
-            updateDialog.startCheckUpdate()
-            updateDialog.show()
-            updateDialog.raise()
-            updateDialog.requestActivate()
+            Update.startUpdate();
         }
     }
 

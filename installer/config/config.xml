@@ -2,15 +2,19 @@
 <Installer>
     <Title>PowerPAD</Title>
     <Name>PowerPAD</Name>
-    <Version>0.1.1</Version>
+    <Version>1.0.0</Version>
     <Publisher>Tekit</Publisher>
     <StartMenuDir>PowerPAD</StartMenuDir>
     <TargetDir>@ApplicationsDirX64@/PowerPAD</TargetDir>
+    <MaintenanceToolName>PowerPADMaintenanceTool</MaintenanceToolName>
     <Logo>icon.png</Logo>
-    <WizardStyle>Modern</WizardStyle>   
+    <WizardStyle>Modern</WizardStyle>
+    <ControlScript>controller.qs</ControlScript>
+    <RepositorySettingsPageVisible>false</RepositorySettingsPageVisible>
+    <DisableAuthorizationFallback>true</DisableAuthorizationFallback>
     <RemoteRepositories>
         <Repository>
-            <Url>https://pjalaber.github.io/powerpad</Url>
+            <Url>file:///C:/Users/Philippe Jalaber/devel/build-PowerPAD-Desktop_Qt_5_14_2_MinGW_64_bit_Static-Release/release/repo</Url>
             <Enabled>1</Enabled>
             <DisplayName>PowerPAD repository</DisplayName>
          </Repository>

@@ -16,7 +16,5 @@
         <file>OptionsDialog.qml</file>
         <file>KeyboardItem.ui.qml</file>
         <file>KeyboardWindow.qml</file>
-        <file>UpdateItem.ui.qml</file>
-        <file>UpdateDialog.qml</file>
     </qresource>
 </RCC>
