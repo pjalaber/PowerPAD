@@ -31,8 +31,8 @@ const double Settings::MOUSE_SCROLL_SPEED_MAX = 10.0;
 const QString Settings::LEFT_JOYSTICK_DEADZONE_KEY = "Controller/LeftJoystickDeadZone";
 const QString Settings::RIGHT_JOYSTICK_DEADZONE_KEY = "Controller/RightJoystickDeadZone";
 const quint32 Settings::JOYSTICK_DEADZONE_MIN = 2000;
-const quint32 Settings::JOYSTICK_DEADZONE_DEFAULT = 3500;
-const quint32 Settings::JOYSTICK_DEADZONE_MAX = 12000;
+const quint32 Settings::JOYSTICK_DEADZONE_DEFAULT = 7000;
+const quint32 Settings::JOYSTICK_DEADZONE_MAX = 20000;
 
 double Settings::mouseSpeedNormalize(double mouseSpeed)
 {

@@ -4,7 +4,7 @@
 #include "controller.h"
 
 Controller::Controller() : m_connected(false),
-    m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_accelerationTimer(),
+    m_connectCheckTimer(), m_state(), m_accelerationGraceTimeState(false),  m_keyboardTimer(),
     m_enableDisableButtonCombo(ButtonState::Up)
 {
 }
@@ -122,7 +122,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
         double speed = SPEED * (m_settings->mouseSpeed() + 1.0);
         double step = (speed * acc / FPS) * delta;
 
-        // normalized tlx and tly between [0.0, 1.0]
+        // normalized tlx and tly between [-1.0, 1.0]
         double ntlx = tlx / maxThumb;
         double ntly = tly / maxThumb;
 
@@ -160,7 +160,7 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
         double maxThumb = 32767 - deadZone;
         double speed = 30 * (m_settings->mouseScrollSpeed() + 1.0);
 
-        // normalized tly between [0.0, 1.0]
+        // normalized tly between [-1.0, 1.0]
         double ntly = tly / maxThumb;
 
         qint32 scroll = (qint32)(square(ntly) * speed);
@@ -299,12 +299,21 @@ void ControllerThread::handleKeyboard(Controller& controller)
 
     if (mg > deadZone) {
         double maxThumb = 32767 - deadZone;
-        double speed = (m_settings->mouseScrollSpeed() + 1.0) / 20;
 
-        // normalized tlx between [0.0, 1.0]
+        // normalized tlx between [-1.0, 1.0]
         double ntlx = tlx / maxThumb;
 
-        m_keyboard->incCharacterIndex(square(ntlx) * speed);
+        if (mg >= 0.5 && !controller.m_keyboardTimer.isValid()) {
+            m_keyboard->setCharacterIndex(m_keyboard->characterIndex() + (tlx < 0 ? -1 : 1));
+            controller.m_keyboardTimer.start();
+        }
+        if (controller.m_keyboardTimer.isValid() && controller.m_keyboardTimer.elapsed() >= 400) {
+            double speed = (m_settings->mouseScrollSpeed() + 1.0) / 10;
+            m_keyboard->incCharacterIndex(square(ntlx) * speed);
+        }
+    }
+    else {
+        controller.m_keyboardTimer.invalidate();
     }
 
     for (Action::ControllerButtonAction action: {

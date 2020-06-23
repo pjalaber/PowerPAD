@@ -12,6 +12,7 @@ protected:
 public:
     MouseAcceleration();
     bool isAccelerationOn();
+    bool isAccelerationNoneWithTimerOn();
     void setAccelerationHint(double magnitude);
 };
 

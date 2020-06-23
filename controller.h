@@ -22,7 +22,7 @@ public:
     static const quint32 PREVIOUS_STATE = 1;
     XINPUT_STATE m_state[2];
     bool m_accelerationGraceTimeState;
-    QElapsedTimer m_accelerationTimer;
+    QElapsedTimer m_keyboardTimer;
     ButtonCombo m_enableDisableButtonCombo;
     MouseAcceleration m_mouseAcceleration;
     ButtonTimer m_repeatTimer;

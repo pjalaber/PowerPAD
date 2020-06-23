@@ -10,6 +10,13 @@ bool MouseAcceleration::isAccelerationOn()
     return m_state != MouseAccelerationNone;
 }
 
+
+bool MouseAcceleration::isAccelerationNoneWithTimerOn()
+{
+    return m_state == MouseAccelerationNone && m_timer.isValid();
+}
+
+
 void MouseAcceleration::setAccelerationHint(double magnitude)
 {
     switch (m_state) {
