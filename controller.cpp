@@ -101,7 +101,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
     }
 
     // compute magnitude
-    double mg = sqrt(tlx * tlx + tly * tly);
+    double mg = qSqrt(tlx * tlx + tly * tly);
 
     QPoint p;
     if (mg > deadZone && WinSys::getMouseCursorPos(p)) {
@@ -154,7 +154,7 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
     }
 
     // compute magnitude
-    double mg = abs(tly);
+    double mg = qAbs(tly);
 
     if (mg > deadZone) {
         double maxThumb = 32767 - deadZone;
@@ -295,7 +295,7 @@ void ControllerThread::handleKeyboard(Controller& controller)
     }
 
     // compute magnitude
-    double mg = abs(tlx);
+    double mg = qAbs(tlx);
 
     if (mg > deadZone) {
         double maxThumb = 32767 - deadZone;
