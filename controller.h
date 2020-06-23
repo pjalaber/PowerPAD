@@ -54,14 +54,14 @@ protected:
     Settings *m_settings;
     Keyboard *m_keyboard;
 
-    static qint32 getNormDeadZone(SHORT value, SHORT deadZone);
+    static double square(double value);
 
     void handleAction(Controller& controller, Action::ControllerButtonAction action);
 
     void updateMousePosition(Controller& controller, double delta);
     void triggerMouseWheel(Controller &controller);
     void triggerMouseButton(const Controller& controller);
-    void handleKeyboard(Controller& controller, double delta);
+    void handleKeyboard(Controller& controller);
     void handleButtons(Controller &controller);
     void handleComboButtons(Controller& controller);    
 

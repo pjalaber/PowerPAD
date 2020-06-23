@@ -12,7 +12,7 @@ protected:
 public:
     MouseAcceleration();
     bool isAccelerationOn();
-    void setAccelerationHint(bool hint);
+    void setAccelerationHint(double magnitude);
 };
 
 

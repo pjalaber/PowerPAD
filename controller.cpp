@@ -69,12 +69,14 @@ ControllerThread* ControllerThread::instance()
     return c;
 }
 
-qint32 ControllerThread::getNormDeadZone(SHORT value, SHORT deadZone)
+double ControllerThread::square(double value)
 {
-    if (abs(value) < deadZone)
-        return 0;
-    else
-        return ((value < 0) ? -1 : 1) * (abs(value) - deadZone);
+    double res = value * value;
+
+    if (value < 0)
+        res = -res;
+
+    return res;
 }
 
 void ControllerThread::updateMousePosition(Controller &controller, double delta)
@@ -84,36 +86,51 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
 
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
 
-    qint32 tlx, tly;
+    double tlx, tly;
     quint32 deadZone;
 
     if (m_action->find(Action::ControllerAnalogAction::MouseMove) == Action::ControllerAnalog::Left) {
         deadZone = m_settings->leftJoystickDeadZone();
-        tlx = getNormDeadZone(gamepad.sThumbLX, deadZone);
-        tly = getNormDeadZone(gamepad.sThumbLY, deadZone);
+        tlx = gamepad.sThumbLX;
+        tly = gamepad.sThumbLY;
     }
     else {
         deadZone = m_settings->rightJoystickDeadZone();
-        tlx = getNormDeadZone(gamepad.sThumbRX, deadZone);
-        tly = getNormDeadZone(gamepad.sThumbRY, deadZone);
+        tlx = gamepad.sThumbRX;
+        tly = gamepad.sThumbRY;
     }
 
+    // compute magnitude
+    double mg = sqrt(tlx * tlx + tly * tly);
+
     QPoint p;
-    if ((tlx != 0 || tly != 0) && WinSys::getMouseCursorPos(p))
-    {
-        qint32 maxThumb = INT16_MAX - deadZone;
-        bool accHint = (abs(tlx) >= 0.90 * maxThumb || abs(tly) >= 0.90 * maxThumb);
-        controller.m_mouseAcceleration.setAccelerationHint(accHint);
-        double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
+    if (mg > deadZone && WinSys::getMouseCursorPos(p)) {
+        if (mg > 32767)
+            mg = 32767;
+        mg -= deadZone;
 
-        double step = (SPEED * m_settings->mouseSpeed() * acc / FPS) * delta;
-        double x = (tlx / (double)maxThumb) * step;
-        double y = (tly / (double)maxThumb) * step;
+        double maxThumb = 32767 - deadZone;
 
-        p.rx() += (qint32)x;
-        p.ry() -= (qint32)y;
+        // normalized magnitude between [0.0, 1.0]
+        double nmg = mg / maxThumb;
 
+        controller.m_mouseAcceleration.setAccelerationHint(nmg);
+        double acc = 1.0;
+        if (controller.m_mouseAcceleration.isAccelerationOn())
+            acc += m_settings->mouseAcceleration() / 10;
+
+        double speed = SPEED * (m_settings->mouseSpeed() + 1.0);
+        double step = (speed * acc / FPS) * delta;
+
+        // normalized tlx and tly between [0.0, 1.0]
+        double ntlx = tlx / maxThumb;
+        double ntly = tly / maxThumb;
+
+        p.rx() += (qint32)(square(ntlx) * step);
+        p.ry() -= (qint32)(square(ntly) * step);
         WinSys::setMouseCursorPos(p);
+    } else {
+         controller.m_mouseAcceleration.setAccelerationHint(0);
     }
 }
 
@@ -124,20 +141,29 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
 
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
 
-    qint32 tly;
+    double tly;
     quint32 deadZone;
 
     if (m_action->find(Action::ControllerAnalogAction::MouseWheel) == Action::ControllerAnalog::Left) {
         deadZone = m_settings->leftJoystickDeadZone();
-        tly = getNormDeadZone(gamepad.sThumbLY, deadZone);
+        tly = gamepad.sThumbLY;
     }
     else {
         deadZone = m_settings->rightJoystickDeadZone();
-        tly = getNormDeadZone(gamepad.sThumbRY, deadZone);
+        tly = gamepad.sThumbRY;
     }
 
-    if (tly != 0) {
-        qint32 scroll = (tly / (double)(INT16_MAX - deadZone)) * m_settings->mouseScrollSpeed() * 30;
+    // compute magnitude
+    double mg = abs(tly);
+
+    if (mg > deadZone) {
+        double maxThumb = 32767 - deadZone;
+        double speed = 30 * (m_settings->mouseScrollSpeed() + 1.0);
+
+        // normalized tly between [0.0, 1.0]
+        double ntly = tly / maxThumb;
+
+        qint32 scroll = (qint32)(square(ntly) * speed);
         WinSys::sendMouseWheel(scroll);
     }
 }
@@ -242,7 +268,7 @@ void ControllerThread::handleAction(Controller& controller, Action::ControllerBu
     }
 }
 
-void ControllerThread::handleKeyboard(Controller& controller, double delta)
+void ControllerThread::handleKeyboard(Controller& controller)
 {
     if (!m_enabled)
         return;
@@ -258,24 +284,27 @@ void ControllerThread::handleKeyboard(Controller& controller, double delta)
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
 
     quint32 deadZone;
-    qint32 tlx;
+    double tlx;
     if (m_action->find(Action::ControllerAnalogAction::KeyboardScroll) == Action::ControllerAnalog::Left) {
         deadZone = m_settings->leftJoystickDeadZone();
-        tlx = getNormDeadZone(gamepad.sThumbLX, deadZone);
+        tlx = gamepad.sThumbLX;
     }
     else {
         deadZone = m_settings->rightJoystickDeadZone();
-        tlx = getNormDeadZone(gamepad.sThumbRX, deadZone);
+        tlx = gamepad.sThumbRX;
     }
 
-    if (tlx != 0) {
-        qint32 maxThumb = INT16_MAX - deadZone;
-        bool accHint = (abs(tlx) >= maxThumb);
-        controller.m_mouseAcceleration.setAccelerationHint(accHint);
-        double acc = controller.m_mouseAcceleration.isAccelerationOn() ? m_settings->mouseAcceleration() : 1.0;
-        double step = (2 * m_settings->mouseSpeed() * acc / FPS) * delta;
-        double x = (tlx / (double)maxThumb) * step;
-        m_keyboard->incCharacterIndex(x);
+    // compute magnitude
+    double mg = abs(tlx);
+
+    if (mg > deadZone) {
+        double maxThumb = 32767 - deadZone;
+        double speed = (m_settings->mouseScrollSpeed() + 1.0) / 20;
+
+        // normalized tlx between [0.0, 1.0]
+        double ntlx = tlx / maxThumb;
+
+        m_keyboard->incCharacterIndex(square(ntlx) * speed);
     }
 
     for (Action::ControllerButtonAction action: {
@@ -338,16 +367,16 @@ void ControllerThread::run()
     fullscreenCheckTimer.start();
 
     while (!m_shouldStop)
-    {
+    {               
         fpsTimer.restart();
 
         if (fullscreenCheckTimer.elapsed() >= 1000) {
             bool nowFullscreen = WinSys::isFullScreen();
-            if (!fullscreen && nowFullscreen) {
+            if (!fullscreen && nowFullscreen) {                
                 m_keyboard->setShow(false);
                 setEnabled(false);
                 fullscreen = true;
-            }
+            }            
             else if (fullscreen && !nowFullscreen) {
                 setEnabled(true);
                 fullscreen = false;
@@ -373,7 +402,7 @@ void ControllerThread::run()
                 qInfo().nospace() << "Controller #" << i << " is disconnected";
             }
 
-            handleKeyboard(controller, elapsed / FRAME_DURATION);
+            handleKeyboard(controller);
             updateMousePosition(controller, elapsed / FRAME_DURATION);
             triggerMouseButton(controller);
             triggerMouseWheel(controller);
