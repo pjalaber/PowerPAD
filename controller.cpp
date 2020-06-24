@@ -33,6 +33,11 @@ bool Controller::buttonIsDown(DWORD button, quint32 state) const
     return m_connected && (m_state[state].Gamepad.wButtons & button) != 0;
 }
 
+bool Controller::singleButtonIsDown(DWORD button) const
+{
+   return m_connected && m_state[CURRENT_STATE].Gamepad.wButtons == button;
+}
+
 ButtonState Controller::getButtonState(DWORD button) const
 {
     if (buttonIsDown(button, PREVIOUS_STATE))
@@ -242,19 +247,24 @@ void ControllerThread::handleAction(Controller& controller, Action::ControllerBu
         Q_ASSERT(0);
     }
 
-    ButtonState buttonState = controller.getButtonState(Action::getXInputButton(button));
+    quint32 b = Action::getXInputButton(button);
+    ButtonState buttonState = controller.getButtonState(b);
+
     switch (buttonState) {
     case ButtonState::Down:
-        WinSys::sendKeyDown(isVirtual, key);
+        if (controller.singleButtonIsDown(b))
+            WinSys::sendKeyDown(isVirtual, key);
         break;
 
     case ButtonState::StillDown:
-        if (!controller.m_repeatTimer.isValid()) {
-            controller.m_repeatTimer.start(buttonState, 400);
-        }
-        else if (controller.m_repeatTimer.hasExpired()) {
-            controller.m_repeatTimer.start(buttonState, 25);
-            WinSys::sendKeyDown(isVirtual, key);
+        if (controller.singleButtonIsDown(b)) {
+            if (!controller.m_repeatTimer.isValid()) {
+                controller.m_repeatTimer.start(buttonState, 400);
+            }
+            else if (controller.m_repeatTimer.hasExpired()) {
+                controller.m_repeatTimer.start(buttonState, 25);
+                WinSys::sendKeyDown(isVirtual, key);
+            }
         }
         break;
 

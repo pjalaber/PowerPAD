@@ -27,7 +27,8 @@ public:
     MouseAcceleration m_mouseAcceleration;
     ButtonTimer m_repeatTimer;
     Controller();
-    bool buttonIsDown(DWORD button, quint32 state) const;
+    bool buttonIsDown(DWORD button, quint32 state) const;    
+    bool singleButtonIsDown(DWORD button) const;
     ButtonState getButtonState(DWORD button) const;
     bool readCurrentState(quint32 i);
     void saveCurrentState(void);
