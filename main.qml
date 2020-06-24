@@ -9,7 +9,7 @@ import com.tekit.powerpad.helper 1.0
 
 ApplicationWindow {
     id: applicationWindow
-    flags: Qt.Window | Qt.FramelessWindowHint
+    flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     visible: false
     width: 230
     height: 200
