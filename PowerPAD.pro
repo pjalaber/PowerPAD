@@ -1,6 +1,6 @@
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
-VERSION_PATCH = 0
+VERSION_PATCH = 1
 
 VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
 QMAKE_TARGET_COMPANY = "Tekit"
@@ -84,7 +84,9 @@ DOLLAR = $
 CHANGELOG=$$cat(changelog.html)
 CHANGELOG=$$replace(CHANGELOG, "<", "&lt;")
 CHANGELOG=$$replace(CHANGELOG, "<", "&gt;")
+CHANGELOG=$$replace(CHANGELOG, "'", "&apos;")
 CHANGELOG=$$replace(CHANGELOG, "\"", "\\\"")
+
 
 installer.target = installer
 installer.commands = \
