@@ -61,8 +61,23 @@ void Controller::saveCurrentState(void)
     m_state[PREVIOUS_STATE] = m_state[CURRENT_STATE];
 }
 
+bool ControllerThread::stateIsEnabled(State s)
+{
+    switch (s) {
+    case StateEnabledWithController:
+    case StateEnabledWithUI:
+    case StateEnabledWithFullscreenExit:
+        return true;
+    case StateDisabledWithController:
+    case StateDisabledWithUI:
+    case StateDisabledWithFullScreenEnter:
+    default:
+        return false;
+    }
+}
+
 ControllerThread::ControllerThread() : m_controller(),
-    m_shouldStop(false), m_enabled(true),
+    m_shouldStop(false), m_state(StateEnabledWithUI),
     m_connectedCount(0), m_action(Action::instance()), m_winsys(WinSys::instance()),
     m_settings(Settings::instance()), m_keyboard(Keyboard::instance())
 {
@@ -86,7 +101,7 @@ double ControllerThread::square(double value)
 
 void ControllerThread::updateMousePosition(Controller &controller, double delta)
 {
-    if (!m_enabled || m_keyboard->show())
+    if (!stateIsEnabled(m_state) || m_keyboard->show())
         return;
 
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
@@ -141,7 +156,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
 
 void ControllerThread::triggerMouseWheel(Controller &controller)
 {
-    if (!m_enabled || m_keyboard->show())
+    if (!stateIsEnabled(m_state) || m_keyboard->show())
         return;
 
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
@@ -175,7 +190,7 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
 
 void ControllerThread::triggerMouseButton(const Controller& controller)
 {
-    if (!m_enabled || m_keyboard->show())
+    if (!stateIsEnabled(m_state) || m_keyboard->show())
         return;
 
     WinSys::MouseButton leftButton;
@@ -280,7 +295,7 @@ void ControllerThread::handleAction(Controller& controller, Action::ControllerBu
 
 void ControllerThread::handleKeyboard(Controller& controller)
 {
-    if (!m_enabled)
+    if (!stateIsEnabled(m_state))
         return;
 
     quint32 button = Action::getXInputButton(m_action->find(Action::ControllerButtonAction::KeyboardActivate));
@@ -350,14 +365,17 @@ void ControllerThread::handleComboButtons(Controller& controller)
         if (controller.m_enableDisableButtonCombo.isComboOn())
         {
             controller.m_enableDisableButtonCombo.clear();
-            setEnabled(!m_enabled);
+            if (stateIsEnabled(m_state))
+                setState(StateDisabledWithController);
+            else
+                setState(StateEnabledWithController);
         }
     }
 }
 
 void ControllerThread::handleButtons(Controller &controller)
 {
-    if (!m_enabled)
+    if (!stateIsEnabled(m_state))
         return;
 
     /* left, right, up, down buttons
@@ -390,14 +408,14 @@ void ControllerThread::run()
         fpsTimer.restart();
 
         if (fullscreenCheckTimer.elapsed() >= 1000) {
-            bool nowFullscreen = WinSys::isFullScreen();
+            bool nowFullscreen = WinSys::isFullScreenMouseCursorHidden();
             if (!fullscreen && nowFullscreen) {                
                 m_keyboard->setShow(false);
-                setEnabled(false);
+                setState(StateDisabledWithFullScreenEnter);
                 fullscreen = true;
             }            
             else if (fullscreen && !nowFullscreen) {
-                setEnabled(true);
+                setState(StateEnabledWithFullscreenExit);
                 fullscreen = false;
             }
             fullscreenCheckTimer.restart();
@@ -458,17 +476,17 @@ void ControllerThread::stop()
     wait();
 }
 
-bool ControllerThread::enabled()
+ControllerThread::State ControllerThread::state()
 {
-    return m_enabled;
+    return m_state;
 }
 
-void ControllerThread::setEnabled(bool enabled)
+void ControllerThread::setState(State state)
 {
-    if (m_enabled != enabled) {
-        m_enabled = enabled;
-        emit enabledChanged();
-        if (m_enabled)
+    if (m_state != state) {
+        m_state = state;
+        emit stateChanged();
+        if (stateIsEnabled(m_state))
             qInfo().nospace() << "Controller thread enabled";
         else
             qInfo().nospace() << "Controller thread disabled";

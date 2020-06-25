@@ -16,6 +16,24 @@ ApplicationWindow {
     maximumWidth: width
     maximumHeight: height
 
+    function stateToString()
+    {
+        var key = qsTr("(Back + Start)");
+        switch (ControllerThread.state) {
+        case ControllerThread.StateEnabledWithController:
+            return qsTr("Control enabled") + " " + key
+        case ControllerThread.StateDisabledWithController:
+            return qsTr("Control disabled") + " " + key
+        case ControllerThread.StateEnabledWithUI:
+        case ControllerThread.StateDisabledWithUI:
+            return ""
+        case ControllerThread.StateEnabledWithFullscreenExit:
+            return qsTr("Control restored after auto-disable during fullscreen. To override auto-disable press Back+Start when a program is fullscreen")
+        case ControllerThread.StateDisabledWithFullScreenEnter:
+            break;
+        }
+    }
+
     // display a popup message on desktop when a controller is connected
     // or disconnected
     Connections {
@@ -28,11 +46,10 @@ ApplicationWindow {
                 sysTray.showMessage("PowerPAD", qsTr("Controller has been disconnected"))
             oldConnectedCount = ControllerThread.connectedCount
         }
-        onEnabledChanged: {
-            if (ControllerThread.enabled)
-                sysTray.showMessage("PowerPAD", qsTr("PowerPAD has been enabled"))
-            else
-                sysTray.showMessage("PowerPAD", qsTr("PowerPAD has been disabled"))
+        onStateChanged: {
+            var msg = stateToString()
+            if (msg !== "")
+                sysTray.showMessage("PowerPAD", msg)
         }
     }
 
@@ -84,11 +101,17 @@ ApplicationWindow {
 
         // on/off switch that enables/disables the controller
         switchEnable {
-            checked: ControllerThread.enabled
-            onCheckedChanged: {
-                ControllerThread.enabled = switchEnable.checked
+            checked: ControllerThread.state == ControllerThread.StateEnabledWithUI ||
+                     ControllerThread.state == ControllerThread.StateEnabledWithController ||
+                     ControllerThread.state == ControllerThread.StateEnabledWithFullscreenExit
+            onClicked:
+            {
+                if (switchEnable.checked)
+                    ControllerThread.state = ControllerThread.StateEnabledWithUI
+                else
+                    ControllerThread.state = ControllerThread.StateDisabledWithUI
                 if (Settings.playSoundsOnDisable) {
-                    if (ControllerThread.enabled)
+                    if (switchEnable.checked)
                         deviceConnectSound.play()
                     else
                         deviceDisconnectSound.play()

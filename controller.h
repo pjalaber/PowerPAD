@@ -41,14 +41,29 @@ public:
 class ControllerThread: public QThread
 {
     Q_OBJECT
-    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+
+public:
+    enum State
+    {
+        StateEnabledWithController,
+        StateDisabledWithController,
+        StateEnabledWithUI,
+        StateDisabledWithUI,
+        StateEnabledWithFullscreenExit,
+        StateDisabledWithFullScreenEnter
+    };
+    Q_ENUM(State)
+
+    static bool stateIsEnabled(State s);
+
+    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(quint32 connectedCount READ connectedCount NOTIFY connectedCountChanged)
 
 protected:
 	Controller m_controller[XUSER_MAX_COUNT];
     quint32 m_leftThumbDeadZone;
 	bool m_shouldStop;
-    bool m_enabled;
+    State m_state;
     quint32 m_connectedCount;
     Action *m_action;
     WinSys *m_winsys;
@@ -78,14 +93,14 @@ public:
     void start();
     void stop();
 
-    bool enabled();
-    void setEnabled(bool enabled);
+    State state();
+    void setState(State state);
 
     quint32 connectedCount();
     void setConnectedCount(quint32 connectedCount);
 
 signals:
-    void enabledChanged();
+    void stateChanged();
     void connectedCountChanged();
 };
 

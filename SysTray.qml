@@ -16,10 +16,12 @@ SystemTrayIcon
     visible: true
     icon.mask: true
     icon.source: {
-        if (!ControllerThread.enabled)
-            "images/icon_disabled.svg"
-        else
+        if (ControllerThread.state == ControllerThread.StateEnabledWithUI ||
+                ControllerThread.state == ControllerThread.StateEnabledWithController ||
+                ControllerThread.state == ControllerThread.StateEnabledWithFullscreenExit)
             "images/icon.svg"
+        else
+            "images/icon_disabled.svg"
     }
 
     menu: contextMenu

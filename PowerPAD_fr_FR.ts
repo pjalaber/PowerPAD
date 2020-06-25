@@ -236,12 +236,12 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="main.qml" line="51"/>
+        <location filename="main.qml" line="68"/>
         <source>Disabled</source>
         <translation>Désactivé</translation>
     </message>
     <message>
-        <location filename="main.qml" line="53"/>
+        <location filename="main.qml" line="70"/>
         <source>Connected</source>
         <translation>Connecté</translation>
     </message>
@@ -251,42 +251,60 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="main.qml" line="21"/>
+        <source>(Back + Start)</source>
+        <translation>(Back + Start)</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="24"/>
+        <source>Control enabled</source>
+        <translation>Contrôle activé</translation>
+    </message>
+    <message>
         <location filename="main.qml" line="26"/>
+        <source>Control disabled</source>
+        <translation>Contrôle désactivé</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="31"/>
+        <source>Control restored after auto-disable during fullscreen. To override auto-disable press Back+Start when a program is fullscreen</source>
+        <translation>Contrôle restauré après auto-désactivation en plein écran. Pour passer outre l'auto-désactivation, appuyer sur Back+Start quand un programme est en plein écran</translation>
+    </message>
+    <message>
+        <location filename="main.qml" line="44"/>
         <source>Controller has been connected</source>
         <translation>Contrôleur connecté</translation>
     </message>
     <message>
-        <location filename="main.qml" line="28"/>
+        <location filename="main.qml" line="46"/>
         <source>Controller has been disconnected</source>
         <translation>Contrôleur déconnecté</translation>
     </message>
     <message>
-        <location filename="main.qml" line="33"/>
         <source>PowerPAD has been enabled</source>
-        <translation>PowerPAD activé</translation>
+        <translation type="vanished">PowerPAD activé</translation>
     </message>
     <message>
-        <location filename="main.qml" line="35"/>
         <source>PowerPAD has been disabled</source>
-        <translation>PowerPAD désactivé</translation>
+        <translation type="vanished">PowerPAD désactivé</translation>
     </message>
     <message>
-        <location filename="main.qml" line="63"/>
+        <location filename="main.qml" line="80"/>
         <source>Error: xinput library not found !</source>
         <translation>librarie xinput introuvable</translation>
     </message>
     <message>
-        <location filename="main.qml" line="65"/>
+        <location filename="main.qml" line="82"/>
         <source>Error: xinput symbol not found !</source>
         <translation>symbole xinput introuvable</translation>
     </message>
     <message>
-        <location filename="main.qml" line="67"/>
+        <location filename="main.qml" line="84"/>
         <source>Error: shell32 library not found !</source>
         <translation>librairie shell32 introuvable</translation>
     </message>
     <message>
-        <location filename="main.qml" line="69"/>
+        <location filename="main.qml" line="86"/>
         <source>Error: shell32 symbol not found !</source>
         <translation>symbole shell32 introuvable</translation>
     </message>

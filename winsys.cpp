@@ -181,13 +181,21 @@ void WinSys::setStatus(Status status)
     }
 }
 
-bool WinSys::isFullScreen()
+bool WinSys::isFullScreenMouseCursorHidden()
 {
+    CURSORINFO c;
+    QUERY_USER_NOTIFICATION_STATE quns;
     Q_ASSERT(SHQueryUserNotificationStateL != nullptr);
 
-    QUERY_USER_NOTIFICATION_STATE quns;
     SHQueryUserNotificationStateL(&quns);
-    return (quns == QUNS_RUNNING_D3D_FULL_SCREEN || quns == QUNS_BUSY);
+    if (quns != QUNS_RUNNING_D3D_FULL_SCREEN && quns != QUNS_BUSY)
+        return false;
+
+    c.cbSize = sizeof(CURSORINFO);
+    if (!GetCursorInfo(&c))
+        return false;
+
+    return c.flags != CURSOR_SHOWING;
 }
 
 quint32 WinSys::XInputGetState(DWORD controllerIndex, XINPUT_STATE *xinput)

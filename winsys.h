@@ -51,7 +51,7 @@ public:
     static bool getMouseCursorPos(QPoint &p);
     static void setMouseCursorPos(const QPoint &p);
 
-    static bool isFullScreen();
+    static bool isFullScreenMouseCursorHidden();
     static quint32 XInputGetState(DWORD controllerIndex, XINPUT_STATE *xinput);
 
     Status status();
