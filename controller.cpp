@@ -61,9 +61,9 @@ void Controller::saveCurrentState(void)
     m_state[PREVIOUS_STATE] = m_state[CURRENT_STATE];
 }
 
-bool ControllerThread::stateIsEnabled(State s)
+bool ControllerThread::stateIsEnabled(State state)
 {
-    switch (s) {
+    switch (state) {
     case StateEnabledWithController:
     case StateEnabledWithUI:
     case StateEnabledWithFullscreenExit:
@@ -75,6 +75,12 @@ bool ControllerThread::stateIsEnabled(State s)
         return false;
     }
 }
+
+bool ControllerThread::stateIsEnabled()
+{
+    return stateIsEnabled(m_state);
+}
+
 
 ControllerThread::ControllerThread() : m_controller(),
     m_shouldStop(false), m_state(StateEnabledWithUI),
@@ -101,7 +107,7 @@ double ControllerThread::square(double value)
 
 void ControllerThread::updateMousePosition(Controller &controller, double delta)
 {
-    if (!stateIsEnabled(m_state) || m_keyboard->show())
+    if (!stateIsEnabled() || m_keyboard->show())
         return;
 
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
@@ -156,7 +162,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
 
 void ControllerThread::triggerMouseWheel(Controller &controller)
 {
-    if (!stateIsEnabled(m_state) || m_keyboard->show())
+    if (!stateIsEnabled() || m_keyboard->show())
         return;
 
     const XINPUT_GAMEPAD &gamepad = controller.m_state[Controller::CURRENT_STATE].Gamepad;
@@ -190,7 +196,7 @@ void ControllerThread::triggerMouseWheel(Controller &controller)
 
 void ControllerThread::triggerMouseButton(const Controller& controller)
 {
-    if (!stateIsEnabled(m_state) || m_keyboard->show())
+    if (!stateIsEnabled() || m_keyboard->show())
         return;
 
     WinSys::MouseButton leftButton;
@@ -295,7 +301,7 @@ void ControllerThread::handleAction(Controller& controller, Action::ControllerBu
 
 void ControllerThread::handleKeyboard(Controller& controller)
 {
-    if (!stateIsEnabled(m_state))
+    if (!stateIsEnabled())
         return;
 
     quint32 button = Action::getXInputButton(m_action->find(Action::ControllerButtonAction::KeyboardActivate));
@@ -365,7 +371,7 @@ void ControllerThread::handleComboButtons(Controller& controller)
         if (controller.m_enableDisableButtonCombo.isComboOn())
         {
             controller.m_enableDisableButtonCombo.clear();
-            if (stateIsEnabled(m_state))
+            if (stateIsEnabled())
                 setState(StateDisabledWithController);
             else
                 setState(StateEnabledWithController);
@@ -375,7 +381,7 @@ void ControllerThread::handleComboButtons(Controller& controller)
 
 void ControllerThread::handleButtons(Controller &controller)
 {
-    if (!stateIsEnabled(m_state))
+    if (!stateIsEnabled())
         return;
 
     /* left, right, up, down buttons
@@ -486,7 +492,7 @@ void ControllerThread::setState(State state)
     if (m_state != state) {
         m_state = state;
         emit stateChanged();
-        if (stateIsEnabled(m_state))
+        if (stateIsEnabled())
             qInfo().nospace() << "Controller thread enabled";
         else
             qInfo().nospace() << "Controller thread disabled";

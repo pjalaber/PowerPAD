@@ -54,7 +54,8 @@ public:
     };
     Q_ENUM(State)
 
-    static bool stateIsEnabled(State s);
+    bool stateIsEnabled();
+    Q_INVOKABLE bool stateIsEnabled(State state);
 
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(quint32 connectedCount READ connectedCount NOTIFY connectedCountChanged)

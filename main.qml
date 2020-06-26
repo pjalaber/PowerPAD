@@ -64,7 +64,7 @@ ApplicationWindow {
         // - "" if no controller is connected
         labelStatus {
             text: {
-                if (!ControllerThread.enabled)
+                if (!ControllerThread.stateIsEnabled(ControllerThread.state))
                     qsTr("Disabled")
                 else if (ControllerThread.connectedCount > 0)
                     qsTr("Connected")
@@ -101,9 +101,7 @@ ApplicationWindow {
 
         // on/off switch that enables/disables the controller
         switchEnable {
-            checked: ControllerThread.state == ControllerThread.StateEnabledWithUI ||
-                     ControllerThread.state == ControllerThread.StateEnabledWithController ||
-                     ControllerThread.state == ControllerThread.StateEnabledWithFullscreenExit
+            checked: ControllerThread.stateIsEnabled(ControllerThread.state)
             onClicked:
             {
                 if (switchEnable.checked)
