@@ -42,6 +42,7 @@ SOURCES += \
         main.cpp \
         mouseacceleration.cpp \
         settings.cpp \
+        singleappinstance.cpp \
         update.cpp \
         winsys.cpp
 
@@ -71,6 +72,7 @@ HEADERS += \
     keyboard.h \
     mouseacceleration.h \
     settings.h \
+    singleappinstance.h \
     update.h \
     winsys.h
 

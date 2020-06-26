@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QDateTime>
+#include "singleappinstance.h"
 #include "controller.h"
 #include "helper.h"
 #include "winsys.h"
@@ -18,7 +19,8 @@
 
 int main(int argc, char *argv[])
 {
-    if (Helper::isAlreadyRunning())
+    SingleAppInstance singleInstance;
+    if (singleInstance.isRunning())
         return 1;
 
     WinSys *winSys = WinSys::instance();

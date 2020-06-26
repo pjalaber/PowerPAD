@@ -17,8 +17,6 @@ public:
     static Helper* instance();
 
     Q_INVOKABLE void restartApp();
-    static bool isAlreadyRunning();
-
     Q_INVOKABLE QRect computeBestWindowRect(const QString &screenName, const QRect &r,
                                             qint32 windowWidth, qint32 windowHeight,
                                             qint32 hMargin = 0, qint32 vMargin = 0);

@@ -5,8 +5,6 @@
 #include <QScreen>
 #include <QDateTime>
 #include <QDir>
-#include <QSystemSemaphore>
-#include <QSharedMemory>
 #include "helper.h"
 
 Helper::Helper(QObject *parent) : QObject(parent),
@@ -41,21 +39,6 @@ void Helper::restartApp()
     app->quit();
     QProcess::startDetached(app->arguments()[0], app->arguments());
 }
-
-bool Helper::isAlreadyRunning()
-{
-    QSystemSemaphore semaphore("PowerPAD_sem", 1);
-    semaphore.acquire();
-
-    QSharedMemory sharedMemory("PowerPAD_shm");
-    bool isRunning = sharedMemory.attach();
-    if (!isRunning)
-        sharedMemory.create(1);
-    semaphore.release();
-
-    return isRunning;
-}
-
 
 QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r,
                                     qint32 windowWidth, qint32 windowHeight, qint32 hMargin, qint32 vMargin)
