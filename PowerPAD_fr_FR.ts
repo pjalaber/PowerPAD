@@ -267,8 +267,8 @@
     </message>
     <message>
         <location filename="main.qml" line="31"/>
-        <source>Control restored after auto-disable during fullscreen. To override auto-disable press Back+Start when a program is fullscreen</source>
-        <translation>Contrôle restauré après auto-désactivation en plein écran. Pour passer outre l&apos;auto-désactivation, appuyer sur Back+Start quand un programme est en plein écran</translation>
+        <source>Control restored after auto-disable during fullscreen. To override press Back+Start in fullscreen</source>
+        <translation>Contrôle restauré après auto-désactivation en plein écran. Appuyer sur Back+Start en plein écran pour passer outre</translation>
     </message>
     <message>
         <location filename="main.qml" line="44"/>
