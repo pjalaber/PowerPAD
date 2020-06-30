@@ -27,17 +27,17 @@
 <context>
     <name>Helper</name>
     <message>
-        <location filename="helper.cpp" line="113"/>
+        <location filename="helper.cpp" line="96"/>
         <source>Built on %1</source>
         <translation>Construit le %1</translation>
     </message>
     <message>
-        <location filename="helper.cpp" line="114"/>
+        <location filename="helper.cpp" line="97"/>
         <source>From revision %1</source>
         <translation>Révision %1</translation>
     </message>
     <message>
-        <location filename="helper.cpp" line="115"/>
+        <location filename="helper.cpp" line="98"/>
         <source>Copyright %1</source>
         <translation>Copyright %1</translation>
     </message>
@@ -268,7 +268,7 @@
     <message>
         <location filename="main.qml" line="31"/>
         <source>Control restored after auto-disable during fullscreen. To override auto-disable press Back+Start when a program is fullscreen</source>
-        <translation>Contrôle restauré après auto-désactivation en plein écran. Pour passer outre l'auto-désactivation, appuyer sur Back+Start quand un programme est en plein écran</translation>
+        <translation>Contrôle restauré après auto-désactivation en plein écran. Pour passer outre l&apos;auto-désactivation, appuyer sur Back+Start quand un programme est en plein écran</translation>
     </message>
     <message>
         <location filename="main.qml" line="44"/>
