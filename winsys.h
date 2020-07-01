@@ -48,8 +48,7 @@ public:
         Down, Up, None
     };
     static void sendMouseButton(MouseButton leftButton, MouseButton rightButton);
-    static bool getMouseCursorPos(QPoint &p);
-    static void setMouseCursorPos(const QPoint &p);
+    static void moveMouse(double deltax, double deltay);
 
     static bool isFullScreenMouseCursorHidden();
     static quint32 XInputGetState(DWORD controllerIndex, XINPUT_STATE *xinput);

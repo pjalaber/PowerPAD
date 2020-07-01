@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <windows.h>
 #include "winsys.h"
 
@@ -152,20 +153,18 @@ void WinSys::sendMouseButton(MouseButton leftButton, MouseButton rightButton)
     }
 }
 
-bool WinSys::getMouseCursorPos(QPoint &p)
+void WinSys::moveMouse(double deltax, double deltay)
 {
-    POINT winP;
-    bool result = GetCursorPos(&winP);
-    if (result) {
-        p.rx() = winP.x;
-        p.ry() = winP.y;
-    }
-    return result;
-}
+    INPUT input = {};
+    POINT p;
 
-void WinSys::setMouseCursorPos(const QPoint &p)
-{
-    SetCursorPos(p.x(), p.y());
+    GetCursorPos(&p);
+
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK;
+    input.mi.dx = (p.x + deltax) / GetSystemMetrics(SM_CXVIRTUALSCREEN) * 65535;
+    input.mi.dy = (p.y - deltay) / GetSystemMetrics(SM_CYVIRTUALSCREEN) * 65535;
+    SendInput(1, &input, sizeof(input));
 }
 
 WinSys::Status WinSys::status()

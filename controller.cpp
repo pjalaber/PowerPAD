@@ -129,8 +129,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
     // compute magnitude
     double mg = qSqrt(tlx * tlx + tly * tly);
 
-    QPoint p;
-    if (mg > deadZone && WinSys::getMouseCursorPos(p)) {
+    if (mg > deadZone) {
         if (mg > 32767)
             mg = 32767;
         mg -= deadZone;
@@ -152,9 +151,7 @@ void ControllerThread::updateMousePosition(Controller &controller, double delta)
         double ntlx = tlx / maxThumb;
         double ntly = tly / maxThumb;
 
-        p.rx() += (qint32)(square(ntlx) * step);
-        p.ry() -= (qint32)(square(ntly) * step);
-        WinSys::setMouseCursorPos(p);
+        WinSys::moveMouse(square(ntlx) * step, square(ntly) * step);
     } else {
          controller.m_mouseAcceleration.setAccelerationHint(0);
     }
