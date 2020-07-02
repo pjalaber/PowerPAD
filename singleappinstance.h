@@ -11,9 +11,12 @@ class SingleAppInstance : public QObject
 protected:
     QSystemSemaphore m_sem;
     QSharedMemory m_shm;
-public:
+private:
     explicit SingleAppInstance(QObject *parent = nullptr);
+public:
+    static SingleAppInstance* instance();
     bool isRunning();
+    void restart();
 };
 
 #endif // SINGLEINSTANCE_H

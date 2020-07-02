@@ -10,8 +10,9 @@ class Update : public QObject
 private:
     QProcess m_checkUpdateProcess, m_updateProcess;
     QString m_availableVersion;
-public:
+private:
     explicit Update(QObject *parent = nullptr);
+public:
     static Update* instance();
     Q_INVOKABLE void startCheckUpdate(void);
     Q_INVOKABLE void startUpdate(void);

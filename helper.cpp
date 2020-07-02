@@ -1,11 +1,11 @@
 #include <QDebug>
 #include <QDesktopWidget>
 #include <QGuiApplication>
-#include <QProcess>
 #include <QScreen>
 #include <QDateTime>
 #include <QDir>
 #include "helper.h"
+#include "singleappinstance.h"
 
 Helper::Helper(QObject *parent) : QObject(parent),
       m_winSystemSoundSettings("HKEY_CURRENT_USER\\AppEvents\\Schemes\\Apps\\.Default", QSettings::NativeFormat),
@@ -35,9 +35,7 @@ void Helper::logicalDotsPerInchChanged(qreal dpi)
 
 void Helper::restartApp()
 {
-    QCoreApplication *app = QCoreApplication::instance();
-    app->quit();
-    QProcess::startDetached(app->arguments()[0], app->arguments());
+    SingleAppInstance::instance()->restart();
 }
 
 QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r,
@@ -95,7 +93,7 @@ QString Helper::getAboutText()
             .arg(POWERPAD_STRINGIFY(POWERPAD_VERSION_STR))
             .arg(tr("Built on %1").arg(locale.toString(dt, locale.dateTimeFormat(QLocale::FormatType::ShortFormat))))
             .arg(tr("From revision %1").arg(POWERPAD_STRINGIFY(POWERPAD_BUILD_REVISION)))
-            .arg(tr("Copyright %1").arg(POWERPAD_STRINGIFY(POWERPAD_COPYRIGHT)));
+            .arg(tr("Copyright %1").arg(POWERPAD_COPYRIGHT));
 }
 
 QString Helper::getDeviceConnectSoundFilename()

@@ -12,8 +12,9 @@ private:
     static const QString CHARACTERS;
     bool m_show;
     double m_characterIndex;
-public:
+private:
     explicit Keyboard(QObject *parent = nullptr);
+public:
     static Keyboard* instance();
     static double getCharacterIndex(double characterIndex);
 

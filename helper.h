@@ -15,8 +15,9 @@ class Helper : public QObject
 protected:
     QSettings m_winSystemSoundSettings;
     HWND m_foregroundWindow;
-public:
+private:
     explicit Helper(QObject *parent = nullptr);
+public:
     static Helper* instance();
 
     Q_INVOKABLE void restartApp();

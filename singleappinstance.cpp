@@ -1,8 +1,16 @@
+#include <QProcess>
+#include <QCoreApplication>
 #include "singleappinstance.h"
 
 SingleAppInstance::SingleAppInstance(QObject *parent) : QObject(parent),
     m_sem("PowerPADSem", 1), m_shm("PowerPADShm")
 {
+}
+
+SingleAppInstance* SingleAppInstance::instance()
+{
+    static SingleAppInstance *s = new SingleAppInstance();
+    return s;
 }
 
 bool SingleAppInstance::isRunning()
@@ -18,4 +26,14 @@ bool SingleAppInstance::isRunning()
     m_sem.release();
 
     return isRunning;
+}
+
+void SingleAppInstance::restart()
+{
+    m_sem.acquire();
+    m_shm.detach();
+    m_sem.release();
+    QCoreApplication *app = QCoreApplication::instance();
+    app->quit();
+    QProcess::startDetached(app->arguments()[0], app->arguments());
 }

@@ -19,8 +19,7 @@
 
 int main(int argc, char *argv[])
 {
-    SingleAppInstance singleInstance;
-    if (singleInstance.isRunning())
+    if (SingleAppInstance::instance()->isRunning())
         return 1;
 
     WinSys *winSys = WinSys::instance();

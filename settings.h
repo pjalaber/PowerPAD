@@ -58,8 +58,9 @@ protected:
     static double mouseAccelerationNormalize(double mouseAcceleration);
     static quint32 joystickNormalize(quint32 joystickSpeed);
 
-public:
+private:
     explicit Settings(QObject *parent = nullptr);
+public:
     static Settings* instance();
 
     void setRunOnStartup(bool runOnStartup);
