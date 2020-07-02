@@ -1,22 +1,15 @@
-VERSION_MAJOR = 0
-VERSION_MINOR = 1
-VERSION_PATCH = 1
+POWERPAD_VERSION_STR = 0.1.1
+POWERPAD_VERSION = 0x000101
+POWERPAD_VERSION_WIN32 = 0,1,1,0
+POWERPAD_COPYRIGHT = "(c) 2020 Tekit - Philippe Jalaber"
 
-VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
-QMAKE_TARGET_COMPANY = "Tekit"
-QMAKE_TARGET_PRODUCT = "PowerPAD"
-QMAKE_TARGET_DESCRIPTION = "PowerPAD service"
-QMAKE_TARGET_COPYRIGHT = "(c) 2020 Tekit - Philippe Jalaber"
+DEFINES += POWERPAD_VERSION_STR=$$POWERPAD_VERSION_STR \
+           POWERPAD_VERSION=$$POWERPAD_VERSION \
+           POWERPAD_VERSION_WIN32=$$POWERPAD_VERSION_WIN32 \
+           POWERPAD_COPYRIGHT=\"\\\"$$POWERPAD_COPYRIGHT\\\"\" \
+           POWERPAD_BUILD_DATE=$$system(powershell "(date -UFormat %s).split(',')[0]") \
+           POWERPAD_BUILD_REVISION=$$system(git rev-parse --short=10 HEAD)
 
-DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\" \
-           APP_COMPANY=\"\\\"$${QMAKE_TARGET_COMPANY}\\\"\" \
-           APP_PRODUCT=\"\\\"$${QMAKE_TARGET_PRODUCT}\\\"\" \
-           APP_DESCRIPTION=\"\\\"$${QMAKE_TARGET_PRODUCT}\\\"\" \
-           APP_COPYRIGHT=\"\\\"$${QMAKE_TARGET_COPYRIGHT}\\\"\" \
-           APP_BUILD_DATE=\"\\\"$$system(powershell "(date -UFormat %s).split(',')[0]")\\\"\" \
-           APP_BUILD_REVISION=\"\\\"$$system(git rev-parse --short=10 HEAD)\\\"\"
-
-RC_ICONS = images/icon.ico
 
 QT += quick widgets quickcontrols2 svg xml
 
@@ -51,13 +44,17 @@ RESOURCES += qml.qrc
 TRANSLATIONS += \
     PowerPAD_fr_FR.ts
 
+# Use our own manifest file
+CONFIG -= embed_manifest_exe
+RC_FILE = PowerPAD.rc
+
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
-QMAKE_CXXFLAGS += -Werror
+QMAKE_CXXFLAGS += -Wall -Werror
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -102,7 +99,7 @@ installer.commands = \
     ForEach { \
         (Get-Content $${DOLLAR}$${DOLLAR}_).Replace(\'|APP_CHANGELOG|\', \'$${CHANGELOG}\').Replace(\'|APP_VERSION|\', \'$${VERSION}\').Replace(\'|RELEASE_DATE|\', (Date -Format \'yyyy-MM-dd\')) | \
         Set-Content $${DOLLAR}$${DOLLAR}_ \
-    }\" && \        
+    }\" && \
     (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\")) && \
     \"$${REPOGEN}\" -v -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" && \
     \"$${BINARY_CREATOR}\" -v -e com.tekit.powerpad -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo/PowerPADSetup64\"
@@ -122,6 +119,7 @@ $${LRELEASE} \"$${PWD}/installer/config/fr.ts\" -qm \"$${PWD}/installer/config/f
 QMAKE_EXTRA_TARGETS += installer lupdate lrelease
 
 DISTFILES += \
+    PowerPAD.rc \
     changelog.html \
     installer/config/config.xml \
     installer/config/controller.qs \

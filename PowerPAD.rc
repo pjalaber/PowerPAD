@@ -1,0 +1,32 @@
+#include <windows.h>
+
+/* Version info for Windows binary */
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION POWERPAD_VERSION_WIN32
+    FILEOS VOS__WINDOWS32
+    FILETYPE VFT_APP
+    BEGIN
+        BLOCK "StringFileInfo"
+        BEGIN
+            BLOCK "040904B0"
+            BEGIN
+                VALUE "CompanyName", "Tekit\0"
+                VALUE "ProductName", "PowerPAD\0"
+                VALUE "FileVersion", """ POWERPAD_VERSION_STR ""\0"
+                VALUE "ProductVersion", """ POWERPAD_VERSION_STR ""\0"
+                VALUE "LegalCopyright", """ POWERPAD_COPYRIGHT ""\0"
+                VALUE "FileDescription", "PowerPAD service\0"
+                VALUE "InternalName", "PowerPAD\0"
+                VALUE "OriginalFilename", "PowerPAD.exe\0"
+            END
+        END
+    END
+/* End of version info */
+
+IDI_ICON1	ICON	DISCARDABLE
+"images/icon.ico"
+/*
+#define RT_MANIFEST 24
+#define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "PowerPAD.manifest"*/

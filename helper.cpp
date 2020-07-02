@@ -86,16 +86,16 @@ QRect Helper::computeBestWindowRect(const QString &screenName, const QRect &r,
 }
 
 QString Helper::getAboutText()
-{
+{   
     QDateTime dt;
-    dt.setSecsSinceEpoch(QString(APP_BUILD_DATE).toUInt());
+    dt.setSecsSinceEpoch(POWERPAD_BUILD_DATE);
     QLocale locale;
-    return QString("<b>%1 %2</b><br><br>%3<br><br>%4<br><br>%5")
-            .arg(APP_PRODUCT)
-            .arg(APP_VERSION)
+
+    return QString("<b>PowerPAD %1</b><br><br>%2<br><br>%3<br><br>%4")
+            .arg(POWERPAD_STRINGIFY(POWERPAD_VERSION_STR))
             .arg(tr("Built on %1").arg(locale.toString(dt, locale.dateTimeFormat(QLocale::FormatType::ShortFormat))))
-            .arg(tr("From revision %1").arg(APP_BUILD_REVISION))
-            .arg(tr("Copyright %1").arg(APP_COPYRIGHT));
+            .arg(tr("From revision %1").arg(POWERPAD_STRINGIFY(POWERPAD_BUILD_REVISION)))
+            .arg(tr("Copyright %1").arg(POWERPAD_STRINGIFY(POWERPAD_COPYRIGHT)));
 }
 
 QString Helper::getDeviceConnectSoundFilename()

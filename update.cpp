@@ -5,6 +5,7 @@
 #include <QDomDocument>
 #include <QDebug>
 #include "update.h"
+#include "helper.h"
 
 Update::Update(QObject *parent) : QObject(parent), m_checkUpdateProcess(this), m_availableVersion("")
 {
@@ -46,7 +47,7 @@ Update::Update(QObject *parent) : QObject(parent), m_checkUpdateProcess(this), m
             return;
         }
         m_availableVersion = version;
-        emit checkUpdateFinishedUpdateAvailable(APP_VERSION, m_availableVersion);
+        emit checkUpdateFinishedUpdateAvailable(POWERPAD_STRINGIFY(POWERPAD_VERSION_STR), m_availableVersion);
     });
 
     connect(&m_checkUpdateProcess, QOverload<QProcess::ProcessError>::of(&QProcess::errorOccurred),

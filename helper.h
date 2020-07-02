@@ -6,6 +6,9 @@
 #include <QSettings>
 #include <windows.h>
 
+#define POWERPAD_STRINGIFY(s) POWERPAD_STRINGIFY2(s)
+#define POWERPAD_STRINGIFY2(s) #s
+
 class Helper : public QObject
 {
     Q_OBJECT
