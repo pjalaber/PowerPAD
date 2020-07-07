@@ -37,3 +37,15 @@ void SingleAppInstance::restart()
     app->quit();
     QProcess::startDetached(app->arguments()[0], app->arguments());
 }
+
+
+void SingleAppInstance::restartWithAdminRights()
+{
+    m_sem.acquire();
+    m_shm.detach();
+    m_sem.release();
+    QCoreApplication *app = QCoreApplication::instance();
+    app->quit();
+    QProcess::startDetached("schtasks.exe", QStringList({"/Run", "/TN", "PowerPAD"}));
+}
+

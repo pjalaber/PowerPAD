@@ -202,3 +202,25 @@ quint32 WinSys::XInputGetState(DWORD controllerIndex, XINPUT_STATE *xinput)
     Q_ASSERT(XInputGetStateL != nullptr);
     return XInputGetStateL(controllerIndex, xinput);
 }
+
+bool WinSys::hasAdminRights()
+{
+    SID_IDENTIFIER_AUTHORITY authority = { SECURITY_NT_AUTHORITY };
+    PSID adminGroup;
+    // Initialize SID.
+    if (!AllocateAndInitializeSid(&authority,
+                                  2,
+                                  SECURITY_BUILTIN_DOMAIN_RID,
+                                  DOMAIN_ALIAS_RID_ADMINS,
+                                  0, 0, 0, 0, 0, 0,
+                                  &adminGroup))
+        return false;
+
+    BOOL isInAdminGroup = FALSE;
+    if (!CheckTokenMembership(0, adminGroup, &isInAdminGroup))
+        isInAdminGroup = FALSE;
+
+    FreeSid(adminGroup);
+    return isInAdminGroup;
+}
+

@@ -19,10 +19,17 @@
 
 int main(int argc, char *argv[])
 {
-    if (SingleAppInstance::instance()->isRunning())
-        return 1;
-
     WinSys *winSys = WinSys::instance();
+    SingleAppInstance *singleAppInstance = SingleAppInstance::instance();
+
+    if (singleAppInstance->isRunning())
+        return 1;
+    if (argc >= 2 && !strcmp(argv[1], "--elevate") && !winSys->hasAdminRights()) {
+        qInfo() << "Restarting with admin rights";
+        singleAppInstance->restartWithAdminRights();
+        return 0;
+    }
+
     Settings *settings = Settings::instance();
     Keyboard *keyboard = Keyboard::instance();
     ControllerThread *controllerThread = ControllerThread::instance();

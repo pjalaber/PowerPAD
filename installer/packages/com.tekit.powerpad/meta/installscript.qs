@@ -15,13 +15,25 @@ Component.prototype.createOperations = function()
     component.createOperations();
     if (systemInfo.productType === "windows") {
         component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe",
-                               "@DesktopDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@");
+                               "@DesktopDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@", "--elevate");
 
         component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe",
-                               "@StartMenuDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@");
+                               "@StartMenuDir@/PowerPAD.lnk", "workingDirectory=@TargetDir@", "--elevate");
 
         component.addOperation("CreateShortcut", "@TargetDir@/PowerPAD.exe",
-                               "@HomeDir@/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/PowerPAD.lnk", "workingDirectory=@TargetDir@");
+                               "@HomeDir@/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/PowerPAD.lnk", "workingDirectory=@TargetDir@", "--elevate");
+
+        component.addOperation("Execute", "schtasks.exe", [
+                                   "/Create",
+                                   "/TN", "PowerPAD",
+                                   "/TR", "@TargetDir@/PowerPAD.exe",
+                                   "/SC", "ONCE",
+                                   "/SD", "01/01/1901",
+                                   "/ST", "00:00",
+                                   "/RL", "Highest"
+                               ],
+                               "UNDOEXECUTE", "schtasks.exe", "/Delete", "/F", "/TN", "PowerPAD"
+                               );
     }
 }
 

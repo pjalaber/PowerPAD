@@ -10,7 +10,6 @@ DEFINES += POWERPAD_VERSION_STR=$$POWERPAD_VERSION_STR \
            POWERPAD_BUILD_DATE=$$system(powershell "(date -UFormat %s).split(',')[0]") \
            POWERPAD_BUILD_REVISION=$$system(git rev-parse --short=10 HEAD)
 
-
 QT += quick widgets quickcontrols2 svg xml
 
 CONFIG += c++11
@@ -92,17 +91,18 @@ installer.commands = \
     (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\")) && \
     md \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" && \
     xcopy \"$${PWD}/installer\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer\" /E/Y && \
-    copy /Y $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/$${QMAKE_TARGET_PRODUCT}.exe\") $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/com.tekit.powerpad/data\") && \
+    copy /Y $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/PowerPAD.exe\") $$shell_path(\"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/com.tekit.powerpad/data\") && \
     (PowerShell -Command \"Remove-Item \'$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/*.ts\' \") && \
     (PowerShell -Command \"Remove-Item \'$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages/com.tekit.powerpad/meta/*.ts\' \") && \
     PowerShell -Command \"Get-ChildItem \'$${OUT_PWD}/$${BUILD_SUBDIR}/installer\' -Recurse -File -Include *.xml | \
     ForEach { \
-        (Get-Content $${DOLLAR}$${DOLLAR}_).Replace(\'|APP_CHANGELOG|\', \'$${CHANGELOG}\').Replace(\'|APP_VERSION|\', \'$${VERSION}\').Replace(\'|RELEASE_DATE|\', (Date -Format \'yyyy-MM-dd\')) | \
+        (Get-Content $${DOLLAR}$${DOLLAR}_).Replace(\'|APP_CHANGELOG|\', \'$${CHANGELOG}\').Replace(\'|APP_VERSION|\', \'$${POWERPAD_VERSION_STR}\').Replace(\'|RELEASE_DATE|\', (Date -Format \'yyyy-MM-dd\')) | \
         Set-Content $${DOLLAR}$${DOLLAR}_ \
     }\" && \
     (if exist \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" (rd /S/Q \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\")) && \
     \"$${REPOGEN}\" -v -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" -i com.tekit.powerpad \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo\" && \
-    \"$${BINARY_CREATOR}\" -v -e com.tekit.powerpad -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo/PowerPADSetup64\"
+    \"$${BINARY_CREATOR}\" --online-only -v -e com.tekit.powerpad -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo/PowerPADSetup64\" && \
+    \"$${BINARY_CREATOR}\" --offline-only -v -c \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/config/config.xml\" -p \"$${OUT_PWD}/$${BUILD_SUBDIR}/installer/packages\" \"$${OUT_PWD}/$${BUILD_SUBDIR}/repo/PowerPADOfflineSetup64\"
 
 lupdate.target = lupdate
 lupdate.commands = \
@@ -119,6 +119,7 @@ $${LRELEASE} \"$${PWD}/installer/config/fr.ts\" -qm \"$${PWD}/installer/config/f
 QMAKE_EXTRA_TARGETS += installer lupdate lrelease
 
 DISTFILES += \
+    PowerPAD.manifest \
     PowerPAD.rc \
     changelog.html \
     installer/config/config.xml \

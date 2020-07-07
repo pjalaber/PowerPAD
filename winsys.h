@@ -53,6 +53,8 @@ public:
     static bool isFullScreenMouseCursorHidden();
     static quint32 XInputGetState(DWORD controllerIndex, XINPUT_STATE *xinput);
 
+    static bool hasAdminRights();
+
     Status status();
     void setStatus(Status status);
 

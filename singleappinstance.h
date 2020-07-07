@@ -17,6 +17,7 @@ public:
     static SingleAppInstance* instance();
     bool isRunning();
     void restart();
+    void restartWithAdminRights();
 };
 
 #endif // SINGLEINSTANCE_H
